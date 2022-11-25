@@ -47,12 +47,14 @@ if (!isConnect()) {
 
   $('#table_mod_insertEqLogicValue_valueEqLogicToMessage').on({
     'change': function(event) {
-      mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options)
+      let _select = document.getElementById('table_mod_insertEqLogicValue_valueEqLogicToMessage')?.querySelector('td.mod_insertEqLogicValue_object select')
+      mod_insertEqLogic.changeObjectEqLogic(_select, mod_insertEqLogic.options)
     }
   }, 'td.mod_insertEqLogicValue_object select')
 
   mod_insertEqLogic.setOptions = function(_options) {
     mod_insertEqLogic.options = _options
+    let _select = document.getElementById('table_mod_insertEqLogicValue_valueEqLogicToMessage')?.querySelector('td.mod_insertEqLogicValue_object select')
     if (!isset(mod_insertEqLogic.options.eqLogic)) {
       mod_insertEqLogic.options.eqLogic = {}
     }
@@ -60,14 +62,16 @@ if (!isConnect()) {
       mod_insertEqLogic.options.object = {}
     }
     if (isset(mod_insertEqLogic.options.object.id)) {
-      $('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select').value(mod_insertEqLogic.options.object.id)
+      _select.jeeValue(mod_insertEqLogic.options.object.id)
     }
-    mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options)
+    mod_insertEqLogic.changeObjectEqLogic(_select, mod_insertEqLogic.options)
   }
 
   mod_insertEqLogic.getValue = function() {
-    var object_name = $('#table_mod_insertEqLogicValue_valueEqLogicToMessage tbody tr:first .mod_insertEqLogicValue_object select option:selected').html().replace(/&nbsp;/g, '')
-    var equipement_name = $('#table_mod_insertEqLogicValue_valueEqLogicToMessage tbody tr:first .mod_insertEqLogicValue_eqLogic select option:selected').html()
+    let _selectObject = document.querySelector('#table_mod_insertEqLogicValue_valueEqLogicToMessage tbody tr').querySelector('.mod_insertEqLogicValue_object select')
+    let _selectEq = document.querySelector('#table_mod_insertEqLogicValue_valueEqLogicToMessage tbody tr').querySelector('.mod_insertEqLogicValue_eqLogic select')
+    var object_name = _selectObject.selectedOptions[0].text.trim()
+    var equipement_name = _selectEq.selectedOptions[0].text.trim()
     if (equipement_name == undefined) {
       return ''
     }
@@ -75,18 +79,18 @@ if (!isConnect()) {
   }
 
   mod_insertEqLogic.getId = function() {
-    return $('.mod_insertEqLogicValue_eqLogic select').value()
+    return document.querySelector('.mod_insertEqLogicValue_eqLogic select').value
   }
 
   mod_insertEqLogic.changeObjectEqLogic = function(_select) {
     jeedom.object.getEqLogic({
-      id: (_select.value() == '' ? -1 : _select.value()),
+      id: (_select.value == '' ? -1 : _select.value),
       orderByName : true,
       error: function(error) {
         $.fn.showAlert({message: error.message, level: 'danger'})
       },
       success: function(eqLogics) {
-        _select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').empty()
+        _select.closest('tr').querySelector('.mod_insertEqLogicValue_eqLogic').empty()
         var selectEqLogic = '<select class="form-control">'
         for (var i in eqLogics) {
           if (init(mod_insertEqLogic.options.eqLogic.eqType_name, 'all') == 'all' || eqLogics[i].eqType_name == mod_insertEqLogic.options.eqLogic.eqType_name) {
@@ -94,10 +98,11 @@ if (!isConnect()) {
         }
       }
       selectEqLogic += '</select>'
-      _select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').append(selectEqLogic)
+      _select.closest('tr').querySelector('.mod_insertEqLogicValue_eqLogic').insertAdjacentHTML('beforeend', selectEqLogic)
     }
     })
   }
 
-  mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options)
+  let _select = document.getElementById('table_mod_insertEqLogicValue_valueEqLogicToMessage')?.querySelector('td.mod_insertEqLogicValue_object select')
+  mod_insertEqLogic.changeObjectEqLogic(_select, mod_insertEqLogic.options)
 </script>

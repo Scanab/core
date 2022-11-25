@@ -20,7 +20,6 @@ if (!jeeFrontEnd.eqAnalyse) {
   jeeFrontEnd.eqAnalyse = {
     init: function() {
       window.jeeP = this
-      jeedomUtils.positionEqLogic()
       this.$batteryContainer = $('div.batteryListContainer')
       this.$alertListContainer = $('div.alertListContainer')
       this.$tableDeadCmd = $('#table_deadCmd')
@@ -127,7 +126,7 @@ $("#tab_deadCmd").off("click").on("click", function() {
 })
 
 jeeP.$alertListContainer.packery({
-  itemSelector: ".eqLogic-widget",
+  itemSelector: "#alertEqlogic .eqLogic-widget",
   gutter: 2
 })
 
@@ -135,7 +134,7 @@ $('.alerts, .batteries').on('click', function() {
   setTimeout(function() {
     jeedomUtils.positionEqLogic()
     jeeP.$alertListContainer.packery({
-      itemSelector: ".eqLogic-widget",
+      itemSelector: "#alertEqlogic .eqLogic-widget",
       gutter: 2
     })
   }, 10)
@@ -153,7 +152,7 @@ $('#in_search').off('keyup').on('keyup', function() {
   if (jeeP.$eqlogics.length == 0) {
     return
   }
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     jeeP.$eqlogics.show()
     return

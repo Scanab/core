@@ -101,7 +101,7 @@ $(function() {
 //searching:
 $('#in_searchByName').on('keyup', function() {
   try {
-    var search = $(this).value()
+    var search = this.value
     var searchID = search
     if (isNaN(search)) searchID = false
 
@@ -258,7 +258,7 @@ $('#eqSource').on({
 
     //Do not replace itself!
     if (sourceEqId == targetEqId) {
-      jeedomUtils.toastMsg('warning', "{{Vous ne pouvez pas remplacer un équipement par lui même.}}")
+      jeedomUtils.showAlert({level: 'warning', message: "{{Vous ne pouvez pas remplacer un équipement par lui même.}}"})
       $(this).val('').keyup()
       jeeP.resetCmdSelects(sourceEqId)
       jeeP.synchEqlogicsReplacers()
@@ -267,7 +267,7 @@ $('#eqSource').on({
 
     //Is ever replacing by this eqLogic:
     if (is_array(jeeP.replacerEqList) && jeeP.replacerEqList.includes(targetEqId)) {
-      jeedomUtils.toastMsg('warning', "{{Cet équipement remplace déjà un autre équipement.}}")
+      jeedomUtils.showAlert({level: 'warning', message: "{{Cet équipement remplace déjà un autre équipement.}}"})
       $(this).val('').keyup()
       jeeP.resetCmdSelects(sourceEqId)
       jeeP.synchEqlogicsReplacers()
@@ -276,7 +276,7 @@ $('#eqSource').on({
 
     //Same name will throw error when in same object:
     if (sourceEqName == targetEqName) {
-      jeedomUtils.toastMsg('warning', "{{Vous ne pouvez pas remplacer un équipement par un équipement de même nom.}}")
+      jeedomUtils.showAlert({level: 'warning', message: "{{Vous ne pouvez pas remplacer un équipement par un équipement de même nom.}}"})
       $(this).val('').keyup()
       jeeP.resetCmdSelects(sourceEqId)
       jeeP.synchEqlogicsReplacers()
@@ -395,7 +395,7 @@ $('#bt_replace').on('click', function() {
     message: "<b>{{Il est fortement conseillé de réaliser un backup système avant d'utiliser cet outil !}}</b>" + "<br>" +  "{{Êtes-vous sûr de vouloir Remplacer ces équipements et commandes ?}}",
     callback: function(result) {
       if (result) {
-        $.hideAlert()
+        jeedomUtils.hideAlert()
 
         var opt_replaceEqs = $('#opt_replaceEqs').is(':checked')
         var opt_hideEqs = $('#opt_hideEqs').is(':checked')

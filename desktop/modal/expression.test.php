@@ -56,43 +56,40 @@ $('#in_testExpression').keypress(function(event) {
 })
 
 $('#bt_searchInfoCmd').on('click', function() {
-  var el = $(this);
   jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function(result) {
-    $('#in_testExpression').atCaret('insert', result.human)
+    document.getElementById('in_testExpression').insertAtCursor(result.human)
   })
 })
 
 $('#bt_searchScenario').on('click', function() {
-  var el = $(this)
   jeedom.scenario.getSelectModal({}, function(result) {
-    $('#in_testExpression').atCaret('insert', result.human)
+    document.getElementById('in_testExpression').insertAtCursor(result.human)
   })
 })
 
 $('#bt_searchEqLogic').on('click', function() {
-  var el = $(this)
   jeedom.eqLogic.getSelectModal({}, function(result) {
-    $('#in_testExpression').atCaret('insert', result.human)
+    document.getElementById('in_testExpression').insertAtCursor(result.human)
   })
 })
 
 $('#bt_selectGenericExpression').on('click', function(event) {
   jeedom.config.getGenericTypeModal({type: 'info', object: true}, function(result) {
-    $('#in_testExpression').atCaret('insert', result.human)
+    document.getElementById('in_testExpression').insertAtCursor(result.human)
   })
 })
 
 $('#ul_expressionHistory').off('click','.bt_expressionHistory').on('click','.bt_expressionHistory',function() {
-  $('#in_testExpression').value($(this).attr('data-command'))
-  $('#bt_executeExpressionOk').trigger('click')
+  document.getElementById('in_testExpression').value = this.getAttribute('data-command')
+  document.getElementById('bt_executeExpressionOk').triggerEvent('click')
 })
 
 $('#bt_executeExpressionOk').on('click',function() {
-  if ($('#in_testExpression').value() == '') {
+  var expression = document.getElementById('in_testExpression').value
+  if (expression == '') {
     $('#div_alertExpressionTest').showAlert({message: '{{L\'expression de test ne peut être vide}}', level: 'danger'})
     return
   }
-  var expression = $('#in_testExpression').value()
   if ($('.bt_expressionHistory[data-command="'+expression.replace(/"/g, '\\"')+'"]').html() == undefined) {
     $('#ul_expressionHistory').prepend('<li class="cursor list-group-item list-group-item-success bt_expressionHistory"  data-command="'+expression.replace(/"/g, '\\"')+'"><a>'+expression+'</a></li>')
   }

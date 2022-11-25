@@ -68,7 +68,7 @@ if (init('rescue', 0) == 0) {
 			$plugin_menu .= '<label class="drop-icon" for="drop-' . $name . '"><i class="fas fa-chevron-down fa-2x"></i></label>';
 			$plugin_menu .= '</a>';
 			$plugin_menu .= '<input type="checkbox" id="drop-' . $name . '">';
-			$plugin_menu .= '</i><ul>';
+			$plugin_menu .= '<ul>';
 			$plugins = $cat[2];
 			foreach ($plugins as $pluginAr) {
 				$pluginObj = $pluginAr[1];
@@ -184,11 +184,6 @@ function setTheme() {
 	include_file('core', 'core', 'js');
 	include_file('core', 'js.inc', 'php');
 
-	sendVarToJS([
-		'jeeFrontEnd.language' => $configs['language'],
-		'jeedom.theme' => $jeedom_theme
-	]);
-
 	include_file('3rdparty', 'nouislider/nouislider', 'js');
 	include_file('3rdparty', 'nouislider/nouislider', 'css');
 	include_file('3rdparty', 'bootstrap/bootstrap.min', 'js');
@@ -202,7 +197,6 @@ function setTheme() {
 	include_file('3rdparty', 'highstock/modules/solid-gauge', 'js');
 	include_file('3rdparty', 'highstock/modules/exporting', 'js');
 	include_file('3rdparty', 'highstock/modules/offline-exporting', 'js');
-	include_file('desktop/common', 'utils', 'js');
 	include_file('3rdparty', 'jquery.at.caret/jquery.at.caret.min', 'js');
 	include_file('3rdparty', 'jwerty/jwerty', 'js');
 	include_file('3rdparty', 'jquery.packery/jquery.packery', 'js');
@@ -235,11 +229,18 @@ function setTheme() {
 	include_file('3rdparty', 'jquery.contextMenu/jquery.contextMenu.min', 'js');
 	include_file('3rdparty', 'autosize/autosize.min', 'js');
 	include_file('3rdparty', 'moment/moment-with-locales.min', 'js');
+
+	//set theme before loading utils:
 	include_file('desktop', 'bootstrap', 'css');
 	include_file('desktop', 'coreWidgets', 'css');
 	include_file('desktop', 'desktop.main', 'css');
-
 	setTheme();
+	sendVarToJS([
+		'jeeFrontEnd.language' => $configs['language'],
+		'jeedom.theme' => $jeedom_theme
+	]);
+	include_file('core', 'dom.utils', 'dom');
+	include_file('desktop/common', 'utils', 'js');
 
 	if (init('report') == 1) {
 		include_file('desktop', 'report', 'css');
@@ -290,7 +291,7 @@ function setTheme() {
 			<header id="jeedomMenuBar" class="navbar navbar-fixed-top navbar-default reportModeHidden">
 				<div class="container-fluid">
 					<div class="navbar-header">
-						<a class="navbar-brand" href="<?php echo $homeLink; ?>"><img id="homeLogoImg" src="<?php echo $homeLogoSrc; ?>" onclick="$.showLoading()" height="30px"></a>
+						<a class="navbar-brand" href="<?php echo $homeLink; ?>"><img id="homeLogoImg" src="<?php echo $homeLogoSrc; ?>" onclick="jeedomUtils.showLoading()" height="30px"></a>
 						<button id="mainMenuHamburgerToggle" class="navbar-toggle cursor" type="button" data-toggle="collapse" data-target=".navbar-collapse">
 							<span class="sr-only">{{Toggle navigation}}</span>
 							<span class="icon-bar"></span>
@@ -303,7 +304,7 @@ function setTheme() {
 
 							<li class="cursor">
 								<a>
-									<i class="fas fa-home"></i> <span class="hidden-sm hidden-md">{{Accueil}}</span> <b class="caret"></b></span>
+									<i class="fas fa-home"></i> <span class="hidden-sm hidden-md">{{Accueil}}</span> <b class="caret"></b>
 									<label class="drop-icon" for="drop-home"><i class="fas fa-chevron-down fa-2x"></i></label>
 								</a>
 								<input type="checkbox" id="drop-home">
@@ -499,6 +500,7 @@ function setTheme() {
 										</li>
 									<?php }} ?>
 									<li><a href="index.php?v=d&logout=1" class="noOnePageLoad"><i class="fas fa-sign-out-alt"></i> {{Se déconnecter}}</a></li>
+									<li><a><i class="fas fa-user"></i> <?php echo $_SESSION['user']->getLogin(); ?></a></li>
 									<?php
 									if ($mbState == 0) { ?>
 										<li><a id="bt_jeedomAbout"><i class="fas fa-info-circle"></i> {{Version}} <?php echo jeedom::version(); ?></a></li>

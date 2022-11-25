@@ -56,6 +56,7 @@ class cmd {
 		'Wh' => array(1000, 'Wh', 'kWh', 'MWh'),
 		'io' => array(1024, 'io', 'Kio', 'Mio', 'Gio', 'Tio'),
 		'o' => array(1000, 'o', 'Ko', 'Mo', 'Go', 'To'),
+		'Bps' => array(1000, 'Bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps'),
 		'Hz' => array(1000, 'Hz', 'kHz', 'MHz', 'GHz'),
 		'l' => array(1000, 'l', 'm<sup>3</sup>')
 	);
@@ -2271,7 +2272,7 @@ class cmd {
 		if ($askEndTime === null || $askEndTime < strtotime('now')) {
 			return false;
 		}
-		if (!in_array($_response, $this->getCache('ask::answer'))) {
+		if (!in_array($_response, $this->getCache('ask::answer')) && !in_array('*', $this->getCache('ask::answer'))) {
 			return false;
 		}
 		$dataStore = new dataStore();

@@ -23,24 +23,24 @@ if (!jeeFrontEnd.interact) {
       this.actionOptions = []
     },
     printInteract: function(_id) {
-      $.hideAlert()
-      $('#div_conf').show()
-      $('#interactThumbnailDisplay').hide()
-      $('.interactDisplayCard').removeClass('active')
-      $('.interactDisplayCard[data-interact_id=' + _id + ']').addClass('active')
+      jeedomUtils.hideAlert()
+      document.getElementById('div_conf').seen()
+      document.getElementById('interactThumbnailDisplay').unseen()
+      document.querySelectorAll('.interactDisplayCard').removeClass('active')
+      document.querySelectorAll('.interactDisplayCard[data-interact_id="' + _id + '"]').addClass('active')
       jeedom.interact.get({
         id: _id,
         success: function(data) {
           jeeP.actionOptions = []
-          $('#div_action').empty()
-          $('.interactAttr').value('')
-          $('.interact').setValues(data, '.interactAttr')
-          $('.interactAttr[data-l1key=filtres][data-l2key=type]').prop('selected', false)
-          $('.interactAttr[data-l1key=filtres][data-l2key=subtype]').prop('selected', false)
-          $('.interactAttr[data-l1key=filtres][data-l2key=unite]').prop('selected', false)
-          $('.interactAttr[data-l1key=filtres][data-l2key=object]').prop('selected', false)
-          $('.interactAttr[data-l1key=filtres][data-l2key=plugin]').prop('selected', false)
-          $('.interactAttr[data-l1key=filtres][data-l2key=category]').prop('selected', false)
+          document.getElementById('div_action').empty()
+          document.querySelectorAll('.interactAttr').jeeValue('')
+          document.querySelectorAll('.interact').setJeeValues(data, '.interactAttr')
+          $('.interactAttr[data-l1key="filtres"][data-l2key="type"]').prop('selected', false)
+          $('.interactAttr[data-l1key="filtres"][data-l2key="subtype"]').prop('selected', false)
+          $('.interactAttr[data-l1key="filtres"][data-l2key="unite"]').prop('selected', false)
+          $('.interactAttr[data-l1key="filtres"][data-l2key="object"]').prop('selected', false)
+          $('.interactAttr[data-l1key="filtres"][data-l2key="plugin"]').prop('selected', false)
+          $('.interactAttr[data-l1key="filtres"][data-l2key="category"]').prop('selected', false)
           if (isset(data.filtres) && isset(data.filtres.type) && $.isPlainObject(data.filtres.type)) {
             for (var i in data.filtres.type) {
               if (data.filtres.type[i] == 1) $('.interactAttr[data-l1key=filtres][data-l2key=type][data-l3key=' + i + ']').prop('selected', true)
@@ -139,7 +139,7 @@ if (!jeeFrontEnd.interact) {
       var actionOption_id = jeedomUtils.uniqId()
       div += '<div class="col-sm-7 actionOptions" id="' + actionOption_id + '"></div>'
       $('#div_' + _type).append(div)
-      $('#div_' + _type + ' .' + _type + '').last().setValues(_action, '.expressionAttr')
+      document.querySelectorAll('#div_' + _type + ' .' + _type + '').last().setJeeValues(_action, '.expressionAttr')
       jeeP.actionOptions.push({
         expression: init(_action.cmd, ''),
         options: _action.options,
@@ -174,7 +174,7 @@ $(function() {
 
 //searching
 $('#in_searchInteract').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     $('.panel-collapse.in').closest('.panel').find('.accordion-toggle').click()
     $('.interactDisplayCard').show()
@@ -352,7 +352,7 @@ $('#bt_chooseIcon').on('click', function() {
 })
 
 $('.interactAttr[data-l1key=display][data-l2key=icon]').on('dblclick', function() {
-  $(this).value('')
+  this.value = ''
 })
 
 $("#div_action").sortable({
@@ -367,7 +367,7 @@ $("#div_action").sortable({
 $('.displayInteracQuery').on('click', function() {
   $('#md_modal').dialog({
     title: "{{Liste des interactions}}"
-  }).load('index.php?v=d&modal=interact.query.display&interactDef_id=' + $('.interactAttr[data-l1key=id]').value()).dialog('open')
+  }).load('index.php?v=d&modal=interact.query.display&interactDef_id=' + document.querySelector('.interactAttr[data-l1key=id]').value).dialog('open')
 })
 
 $('#bt_interactThumbnailDisplay').on('click', function() {
@@ -398,9 +398,9 @@ $('.interactDisplayCard').off('mouseup').on('mouseup', function(event) {
 $('#bt_duplicate').on('click', function() {
   bootbox.prompt("{{Nom}} ?", function(result) {
     if (result !== null) {
-      var interact = $('.interact').getValues('.interactAttr')[0]
+      var interact = document.querySelectorAll('.interact').getJeeValues('.interactAttr')[0]
       interact.actions = {}
-      interact.actions.cmd = $('#div_action .action').getValues('.expressionAttr')
+      interact.actions.cmd = document.querySelectorAll('#div_action .action').getJeeValues('.expressionAttr')
       interact.name = result
       interact.id = ''
       jeedom.interact.save({
@@ -433,13 +433,13 @@ $('#div_conf').on({
         type: 'info'
       }
     }, function(result) {
-      $('.interactAttr[data-l1key=reply]').atCaret('insert', result.human)
+      document.querySelector('.interactAttr[data-l1key="reply"]').insertAtCursor(result.human)
     })
   }
 }, '.listEquipementInfoReply')
 
 $("#bt_saveInteract").on('click', function() {
-  var interact = $('.interact').getValues('.interactAttr')[0]
+  var interact = document.querySelectorAll('.interact').getJeeValues('.interactAttr')[0]
   interact.filtres.type = {}
   $('option[data-l1key=filtres][data-l2key=type]').each(function() {
     interact.filtres.type[$(this).attr('data-l3key')] = ($(this).prop('selected') === true) ? '1' : '0'
@@ -470,7 +470,7 @@ $("#bt_saveInteract").on('click', function() {
   })
 
   interact.actions = {}
-  interact.actions.cmd = $('#div_action .action').getValues('.expressionAttr')
+  interact.actions.cmd = document.querySelectorAll('#div_action .action').getJeeValues('.expressionAttr')
 
   jeedom.interact.save({
     interact: interact,
@@ -537,7 +537,7 @@ $("#bt_addInteract,#bt_addInteract2").on('click', function() {
 })
 
 $("#bt_removeInteract").on('click', function() {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer l\'interaction}} <span style="font-weight: bold ;">' + $('.interactDisplayCard.active .name').text() + '</span> ?', function(result) {
     if (result) {
       jeedom.interact.remove({
@@ -564,28 +564,28 @@ $('#bt_addAction').off('click').on('click', function() {
 
 $('#div_conf').on({
   'focusout': function(event) {
-    var type = $(this).attr('data-type')
-    var expression = $(this).closest('.' + type).getValues('.expressionAttr')
-    var el = $(this)
-    jeedom.cmd.displayActionOption($(this).value(), init(expression[0].options), function(html) {
-      el.closest('.' + type).find('.actionOptions').html(html)
+    var type = this.getAttribute('data-type')
+    var expression = this.closest('.' + type).getJeeValues('.expressionAttr')
+    var el = this
+    jeedom.cmd.displayActionOption(this.jeeValue(), init(expression[0].options), function(html) {
+      $(el).closest('.' + type).find('.actionOptions').html(html)
       jeedomUtils.taAutosize()
     })
   }
-}, '.cmdAction.expressionAttr[data-l1key=cmd]')
+}, '.cmdAction.expressionAttr[data-l1key="cmd"]')
 
 $('#div_conf').on({
   'click': function(event) {
-    var type = $(this).attr('data-type')
-    var el = $(this).closest('.' + type).find('.expressionAttr[data-l1key=cmd]')
+    var type = this.getAttribute('data-type')
+    var el = this.closest('.' + type).querySelector('.expressionAttr[data-l1key="cmd"]')
     jeedom.cmd.getSelectModal({
       cmd: {
         type: 'info'
       }
     }, function(result) {
-      el.value(result.human)
-      jeedom.cmd.displayActionOption(el.value(), '', function(html) {
-        el.closest('.' + type).find('.actionOptions').html(html)
+      el.jeeValue(result.human)
+      jeedom.cmd.displayActionOption(result.human, '', function(html) {
+        $(el).closest('.' + type).find('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     })
@@ -594,12 +594,12 @@ $('#div_conf').on({
 
 $('#div_conf').on({
   'click': function(event) {
-    var type = $(this).attr('data-type')
-    var el = $(this).closest('.' + type).find('.expressionAttr[data-l1key=cmd]')
+    var type = this.getAttribute('data-type')
+    var el = this.closest('.' + type).querySelector('.expressionAttr[data-l1key="cmd"]')
     jeedom.getSelectActionModal({}, function(result) {
-      el.value(result.human)
-      jeedom.cmd.displayActionOption(el.value(), '', function(html) {
-        el.closest('.' + type).find('.actionOptions').html(html)
+      el.jeeValue(result.human)
+      jeedom.cmd.displayActionOption(result.human, '', function(html) {
+        $(el).closest('.' + type).find('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     })
@@ -608,16 +608,16 @@ $('#div_conf').on({
 
 $('#div_conf').on({
   'click': function(event) {
-    var type = $(this).attr('data-type')
-    var el = $(this).closest('.' + type).find('.expressionAttr[data-l1key=cmd]')
+    var type = this.getAttribute('data-type')
+    var el = this.closest('.' + type).querySelector('.expressionAttr[data-l1key="cmd"]')
     jeedom.cmd.getSelectModal({
       cmd: {
         type: 'action'
       }
     }, function(result) {
-      el.value(result.human)
-      jeedom.cmd.displayActionOption(el.value(), '', function(html) {
-        el.closest('.' + type).find('.actionOptions').html(html)
+      el.jeeValue(result.human)
+      jeedom.cmd.displayActionOption(result.human, '', function(html) {
+        $(el).closest('.' + type).find('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     })

@@ -26,14 +26,14 @@ jeedomUtils.tileHeightStep = parseInt(jeedom.theme['widget::step::height']) >= 1
 jeedomUtils.tileHeightSteps = Array.apply(null, {length: 10}).map(function(value, index) {return (index + 1) * jeedomUtils.tileHeightStep})
 
 
-$(function() {
+document.addEventListener('DOMContentLoaded', function() {
   jeedomUtils._elBackground = $('#backgroundforJeedom')
   $(document)
     .ajaxStart(function() {
-      $.showLoading()
+      jeedomUtils.showLoading()
     })
     .ajaxStop(function() {
-      $.hideLoading()
+      jeedomUtils.hideLoading()
     })
 })
 
@@ -45,7 +45,7 @@ window.addEventListener('error', function(event) {
   }
   jeedomUtils.JS_ERROR.push(event)
   $('#bt_jsErrorModal').show()
-  $.hideLoading()
+  jeedomUtils.hideLoading()
 })
 
 if ('SecurityPolicyViolationEvent' in window) { // Check browser support of SecurityPolicyViolationEnevt interface
@@ -63,7 +63,7 @@ if ('SecurityPolicyViolationEvent' in window) { // Check browser support of Secu
     }
     jeedomUtils.JS_ERROR.push({"filename": event.documentURI, "lineno": "0", "message": msg})
     $('#bt_jsErrorModal').show()
-    $.hideLoading()
+    jeedomUtils.hideLoading()
   })
 }
 
@@ -78,7 +78,7 @@ var modifyWithoutSave = false
 jeedomUtils.checkPageModified = function() {
   if (jeeFrontEnd.modifyWithoutSave || modifyWithoutSave) {
     if (!confirm('{{Attention vous quittez une page ayant des données modifiées non sauvegardées. Voulez-vous continuer ?}}')) {
-      $.hideLoading()
+      jeedomUtils.hideLoading()
       return true
     }
     modifyWithoutSave = false
@@ -124,7 +124,7 @@ jeedomUtils.loadPage = function(_url, _noPushHistory) {
   }
 
   if (isset(bootbox)) bootbox.hideAll()
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeedomUtils.datePickerDestroy()
   jeedomUtils.autocompleteDestroy()
   jeedomUtils.cleanModals()
@@ -145,7 +145,10 @@ jeedomUtils.loadPage = function(_url, _noPushHistory) {
 
   jeedomUtils.backgroundIMG = null
 
-  $.clearDivContent('div_pageContainer')
+  //Empty one page and remove listeners:
+  var div_pageContainer = document.getElementById('div_pageContainer')
+  document.emptyById(div_pageContainer)
+  div_pageContainer.replaceWith(div_pageContainer.cloneNode(true))
   $('body').off('mouseenter mouseleave')
   $('#div_pageContainer').off()
 
@@ -191,7 +194,7 @@ jeedomUtils.loadPage = function(_url, _noPushHistory) {
   return
 }
 
-$(function() {
+document.addEventListener('DOMContentLoaded', function() {
   var $body = $('body')
   if (getDeviceType()['type'] == 'desktop') jeedomUtils.userDeviceType = 'desktop'
   $body.attr('data-device', jeedomUtils.userDeviceType)
@@ -272,46 +275,6 @@ $(function() {
     jeedomUtils.setBackgroundImage('')
   }
 
-  //options for jeedom.notify() toastr, need jeedom.theme set!
-  toastr.options = {
-    "newestOnTop": true,
-    "closeButton": true,
-    "debug": false,
-    "positionClass": jeedom.theme['interface::toast::position'],
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": parseInt(jeedom.theme['interface::toast::duration']) * 1000,
-    "extendedTimeOut": "1500",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut",
-    "progressBar": true,
-    "onclick": function() {
-      window.toastr.clear()
-      $('#md_modal').dialog({title: "{{Centre de Messages}}"}).load('index.php?v=d&modal=message.display').dialog('open')
-    }
-  }
-  jeedomUtils.toastrUIoptions = {
-    "newestOnTop": true,
-    "closeButton": true,
-    "tapToDismiss": false,
-    "debug": false,
-    "positionClass": jeedom.theme['interface::toast::position'],
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "1500",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut",
-    "progressBar": true,
-    "onclick": function(event) {
-      event.clickToClose = true
-    }
-  }
-
   setTimeout(function() {
     jeedomUtils.initTooltips()
     jeedomUtils.createObserver()
@@ -319,15 +282,109 @@ $(function() {
   }, 1)
 })
 
-jeedomUtils.toastMsg = function(level, msg, target) {
-  level = isset(level) ? level : 'success'
-  msg = isset(msg) ? msg : ''
-  toastr[level](msg, ' ', jeedomUtils.toastrUIoptions)
-  if (isset(target)) {
-    try {
-      $("#toast-container").appendTo(target).css('position', 'absolute')
-    } catch(error) {}
+//Toastr____________ options for jeedom.notify() toastr, need jeedom.theme set!
+toastr.options = {
+  "newestOnTop": true,
+  "closeButton": true,
+  "debug": false,
+  "positionClass": jeedom.theme['interface::toast::position'],
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": parseInt(jeedom.theme['interface::toast::duration']) * 1000,
+  "extendedTimeOut": "1500",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut",
+  "progressBar": true,
+  "onclick": function() {
+    window.toastr.clear()
+    $('#md_modal').dialog({title: "{{Centre de Messages}}"}).load('index.php?v=d&modal=message.display').dialog('open')
   }
+}
+jeedomUtils.toastrUIoptions = {
+  "newestOnTop": true,
+  "closeButton": true,
+  "tapToDismiss": false,
+  "debug": false,
+  "positionClass": jeedom.theme['interface::toast::position'],
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": parseInt(jeedom.theme['interface::toast::duration']) * 1000,
+  "extendedTimeOut": "1500",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut",
+  "progressBar": true,
+  "onclick": function(event) {
+    event.clickToClose = true
+  }
+}
+
+jeedomUtils.showAlert = function(_options) {
+  var options = init(_options, {})
+  options.message = init(options.message, '')
+  options.level = init(options.level, '')
+  options.emptyBefore = init(options.emptyBefore, false)
+  options.show = init(options.show, true)
+  options.attach = init(options.attach, false)
+  if (!options.ttl) {
+    if (options.level == 'danger') {
+      options.ttl = 0
+    } else {
+      options.ttl = 5000
+    }
+  }
+  if (options.level == 'danger') options.level = 'error'
+  if (options.emptyBefore == true) {
+    window.toastr.clear()
+  }
+  let options_toastr = jeedomUtils.toastrUIoptions
+  options_toastr.timeOut = options.ttl
+
+  toastr[options.level](options.message, ' ', options_toastr)
+
+  var toastContainer = document.getElementById('toast-container')
+  if (options.attach) {
+    try {
+      var attachTo = document.querySelector(options.attach)
+      if (attachTo != null) {
+        attachTo.appendChild(toastContainer)
+        toastContainer.style.position = 'absolute'
+      }
+    } catch (error) {
+      console.error('jeedomUtils.showAlert: ' + error)
+    }
+  } else {
+    toastContainer.style.position = ''
+  }
+}
+
+jeedomUtils.hideAlert = function() {
+  window.toastr.clear()
+
+  //Deprecated, old div_alert may be used on plugins:
+  document.querySelectorAll('.jqAlert').forEach(function(element) {
+    element.innerHTML = ''
+    element.unseen()
+  })
+}
+
+jeedomUtils.loadingTimeout = null
+jeedomUtils.showLoading = function() {
+  document.getElementById('div_jeedomLoading').seen()
+  //Hanging timeout:
+  clearTimeout(jeedomUtils.loadingTimeout)
+  jeedomUtils.loadingTimeout = setTimeout(() => {
+    if (!document.getElementById('div_jeedomLoading').isHidden()) {
+      jeedomUtils.hideLoading()
+      jeedomUtils.showAlert({level: 'danger', message: 'Operation Timeout: Something has gone wrong!'})
+    }
+  }, 20 * 1000)
+}
+jeedomUtils.hideLoading = function() {
+  document.getElementById('div_jeedomLoading').unseen()
 }
 
 //Jeedom theme__
@@ -379,7 +436,7 @@ jeedomUtils.setJeedomTheme = function() {
     if ($("#shadows_theme_css").length > 0) $('#shadows_theme_css').attr('href', themeShadows)
     jeedomUtils.triggerThemechange()
     let backgroundImgPath = jeedomUtils._elBackground.find('#bottom').css('background-image')
-    if (backgroundImgPath.indexOf('/data/') == -1) {
+    if (backgroundImgPath.indexOf('/data/') == -1 && backgroundImgPath.indexOf('/plugins/') == -1) {
       jeedomUtils.setBackgroundImage('')
     }
   }
@@ -662,7 +719,7 @@ jeedomUtils.initJeedomModals = function() {
   function emptyModal(_id='') {
     if (_id == '') return
     $('body').css({overflow: 'inherit'})
-    $.clearDivContent(_id)
+    document.emptyById(_id)
   }
 }
 
@@ -800,9 +857,9 @@ jeedomUtils.setJeedomGlobalUI = function() {
   })
 
   $('body').off('click','.jeeHelper[data-helper=cron]').on('click','.jeeHelper[data-helper=cron]',function() {
-    var el = $(this).closest('div').find('input')
-    jeedom.getCronSelectModal({},function(result) {
-      el.value(result.value)
+    var el = this.closest('div').querySelector('input')
+    jeedom.getCronSelectModal({}, function(result) {
+      el.jeeValue(result.value)
     })
   })
 
@@ -1159,12 +1216,6 @@ jeedomUtils.addOrUpdateUrl = function(_param, _value, _title) {
   }
 }
 
-String.prototype.HTMLFormat = function() {
-  return this.replace(/[\u00A0-\u9999<>\&]/g, function (i) {
-    return '&#' + i.charCodeAt(0) + ';';
-  });
-}
-
 //Global UI functions__
 jeedomUtils.userDeviceType = 'mobile'
 jeedomUtils.setJeedomMenu = function() {
@@ -1263,45 +1314,52 @@ jeedomUtils.closeJeedomMenu = function() {
 
 jeedomUtils.positionEqLogic = function(_id, _preResize, _scenario) {
   var margin = jeedom.theme['widget::margin'] + 'px ' + jeedom.theme['widget::margin']*2 + 'px ' + jeedom.theme['widget::margin'] + 'px 0'
+
   //Get full width, step columns, to fill right space:
-  var containerWidth = window.innerWidth - 22
+  if (document.getElementsByClassName('div_displayEquipement').length > 0) {
+    var containerWidth = document.getElementsByClassName('div_displayEquipement')[0].offsetWidth
+  } else {
+    var containerWidth = window.innerWidth - 22
+  }
   var cols = Math.floor(containerWidth / jeedomUtils.tileWidthStep) + 1
   var tileWidthAdd = containerWidth - (cols * jeedomUtils.tileWidthStep)
   var widthStep = jeedomUtils.tileWidthStep + (tileWidthAdd / cols) - (2 * parseInt(jeedom.theme['widget::margin']))
   var widthSteps = Array.apply(null, {length: 10}).map(function(value, index) {return (index + 1) * widthStep})
 
   if (_id != undefined) {
-    var tile = (_scenario) ? $('div.scenario-widget[data-scenario_id='+_id+']') : $('div.eqLogic-widget[data-eqlogic_id='+_id+']')
-    tile.css('margin', '0px')
+    var tile = (_scenario) ? document.querySelector('.scenario-widget[data-scenario_id="'+_id+'"]') : document.querySelector('.eqLogic-widget[data-eqlogic_id="'+_id+'"]')
     if (init(_preResize, true)) {
-      tile.width(Math.floor(tile.width() / jeedom.theme['widget::step::width']) * jeedom.theme['widget::step::width'] - (2 * jeedom.theme['widget::margin']))
-      tile.height(Math.floor(tile.height() / jeedom.theme['widget::step::height']) * jeedom.theme['widget::step::height'] - (2 * jeedom.theme['widget::margin']))
-    }
-
-    var width = jeedomUtils.getClosestInArray(tile.width(), widthSteps)
-    tile.data('confWidth', parseInt(tile.width()))
-    var height = jeedomUtils.getClosestInArray(tile.height(), jeedomUtils.tileHeightSteps)
-    tile.width(width + (2 * widthSteps.indexOf(width) * parseInt(jeedom.theme['widget::margin'])))
-    tile.height(height + (2 * jeedomUtils.tileHeightSteps.indexOf(height) * parseInt(jeedom.theme['widget::margin'])))
-
-    tile.css('margin', margin)
-  } else {
-    var width, height
-    $('div.eqLogic-widget, div.scenario-widget')
-      .each(function() {
-        //As we alter width with right space, we need original width ref:
-        if ($(this).data('confWidth') === undefined) {
-          $(this).data('confWidth', $(this).width())
-          $(this).data('stepHeight', jeedomUtils.tileHeightSteps.indexOf(jeedomUtils.getClosestInArray($(this).height(), jeedomUtils.tileHeightSteps)))
-        }
-        width = jeedomUtils.getClosestInArray($(this).data('confWidth'), widthSteps)
-        height = jeedomUtils.tileHeightSteps[$(this).data('stepHeight')]
-        $(this)
-          .width(width + (2 * widthSteps.indexOf(width) * parseInt(jeedom.theme['widget::margin'])))
-          .height(height + (2 * jeedomUtils.tileHeightSteps.indexOf(height) * parseInt(jeedom.theme['widget::margin'])))
+      Object.assign(tile.style, {
+        width: (Math.floor(tile.width() / jeedom.theme['widget::step::width']) * jeedom.theme['widget::step::width'] - (2 * jeedom.theme['widget::margin'])) + 'px',
+        height: (Math.floor(tile.height() / jeedom.theme['widget::step::height']) * jeedom.theme['widget::step::height'] - (2 * jeedom.theme['widget::margin'])) + 'px'
       })
-      .css('margin', margin)
-      .addClass('jeedomAlreadyPosition')
+    }
+    var width = jeedomUtils.getClosestInArray(tile.offsetWidth, widthSteps)
+    tile.dataset.confWidth = tile.offsetWidth
+    var height = jeedomUtils.getClosestInArray(tile.offsetHeight, jeedomUtils.tileHeightSteps)
+    Object.assign(tile.style, {
+      width: (width + (2 * widthSteps.indexOf(width) * parseInt(jeedom.theme['widget::margin']))) + 'px',
+      height: (height + (2 * jeedomUtils.tileHeightSteps.indexOf(height) * parseInt(jeedom.theme['widget::margin']))) + 'px',
+      margin: margin
+    })
+  } else {
+    var width, height, idx, element
+    var elements = document.querySelectorAll('div.eqLogic-widget, div.scenario-widget')
+    for (idx=0; idx < elements.length; idx++) {
+      tile = elements[idx]
+      if (tile.dataset.confWidth === undefined) {
+        tile.dataset.confWidth = tile.offsetWidth
+        tile.dataset.stepHeight = jeedomUtils.tileHeightSteps.indexOf(jeedomUtils.getClosestInArray(tile.offsetHeight, jeedomUtils.tileHeightSteps))
+      }
+      width = jeedomUtils.getClosestInArray(tile.dataset.confWidth, widthSteps)
+      height = jeedomUtils.tileHeightSteps[tile.dataset.stepHeight]
+      Object.assign(tile.style, {
+        width: (width + (2 * widthSteps.indexOf(width) * parseInt(jeedom.theme['widget::margin']))) + 'px',
+        height: (height + (2 * jeedomUtils.tileHeightSteps.indexOf(height) * parseInt(jeedom.theme['widget::margin']))) + 'px',
+        margin: margin
+      })
+      tile.classList.add("jeedomAlreadyPosition")
+    }
   }
 }
 jeedomUtils.getClosestInArray = function(_num, _refAr) {
@@ -1527,17 +1585,6 @@ jeedomUtils.setCheckContextMenu = function(_callback) {
 
 
 //Extensions__
-jQuery.fn.findAtDepth = function(selector, maxDepth) {
-  var depths = [], i
-  if (maxDepth > 0) {
-    for (i = 1; i <= maxDepth; i++) {
-      depths.push('> ' + new Array(i).join('* > ') + selector)
-    }
-    selector = depths.join(', ')
-  }
-  return this.find(selector)
-}
-
 jQuery.fn.setCursorPosition = function(position) {
   if(this.lengh == 0) return this;
   return $(this).setSelection(position, position)

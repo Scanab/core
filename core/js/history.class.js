@@ -193,7 +193,7 @@ jeedom.history.modalchangePoint = function(event, _this, _params) {
 jeedom.history.drawChart = function(_params) {
   $.showLoading();
   if ($.type(_params.dateRange) == 'object') {
-    _params.dateRange = json_encode(_params.dateRange);
+    _params.dateRange = JSON.stringify(_params.dateRange);
   }
   _params.option = init(_params.option, {
     derive: ''
@@ -207,7 +207,7 @@ jeedom.history.drawChart = function(_params) {
     data: {
       action: "getHistory",
       id: _params.cmd_id,
-      dateRange: ($.type(_params.dateRange) == 'object') ? json_encode(_params.dateRange) || '' : _params.dateRange || '',
+      dateRange: ($.type(_params.dateRange) == 'object') ? JSON.stringify(_params.dateRange) || '' : _params.dateRange || '',
       dateStart: _params.dateStart || '',
       dateEnd: _params.dateEnd || '',
       derive: _params.option.derive || '',
@@ -258,6 +258,10 @@ jeedom.history.drawChart = function(_params) {
 
       _params.round = data.result.round
       if (_params.round == 0) _params.round = 2
+
+      if(_params.option.unite){
+        data.result.unite = _params.option.unite;
+      }
 
       /*
       comparing true
@@ -663,6 +667,11 @@ jeedom.history.drawChart = function(_params) {
         } else {
           if (_params.option.graphType == 'areaspline') {
             _params.option.graphType = 'area'
+          }
+          if(_params.calcul){
+            for (var i in data.result.data) {
+              data.result.data[i][1] = _params.calcul(data.result.data[i][1])
+            }
           }
           if(_params.option.invertData){
             for (var i in data.result.data) {
@@ -1749,7 +1758,11 @@ jeedom.history.emptyChart = function(_chartId, _yAxis) {
       if (!series.name.includes('Navigator ')) {
         var cmd_id = series.options.id
         series.remove(false)
-        if (_yAxis) jeedom.history.chart[_chartId].chart.get(cmd_id+'-yAxis').remove(false)
+        if (_yAxis) {
+          try {
+            jeedom.history.chart[_chartId].chart.get(cmd_id+'-yAxis').remove(false)
+          } catch (e) {}
+        }
       }
     }
   })
@@ -1817,7 +1830,7 @@ jeedom.history.handleRangeButton = function(_button, _chartId) {
       }
     })
 
-    $('input#in_startDate').value(mRequestStart.format('YYYY-MM-DD'))
+    document.getElementById('in_startDate').value = mRequestStart.format('YYYY-MM-DD')
 
     return true
   } else {

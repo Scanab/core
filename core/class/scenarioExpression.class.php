@@ -907,6 +907,36 @@ class scenarioExpression {
 		return '#' . $color->red . $color->green . $color->blue;
 	}
 
+	public static function triggerChange($_during, $_scenario) {
+		$occurence = 0;
+		$limit = 60;
+		$during = jeedom::evaluateExpression($_during);
+		$limit = (is_numeric($during)) ? $during : 60;
+		$cmd = cmd::byId(str_replace('#', '', $_scenario->getRealTrigger()));
+		if (!is_object($cmd)) {
+			return 0;
+		}
+		$init_value = $cmd->execCmd();
+		while (true) {
+			if ($init_value != $cmd->execCmd()) {
+				return 1;
+			}
+			if ($occurence > $limit) {
+				return 0;
+			}
+			$occurence++;
+			sleep(1);
+		}
+		return 0;
+	}
+
+	public static function triggerId(&$_scenario = null) {
+		if ($_scenario !== null) {
+			return str_replace('#', '', $_scenario->getRealTrigger());
+		}
+		return 0;
+	}
+
 	public static function trigger($_name = '', &$_scenario = null) {
 		if ($_scenario !== null) {
 			if (trim($_name) == '') {
@@ -1259,6 +1289,10 @@ class scenarioExpression {
 						$replace2[$replace_string] = self::trigger($arguments[0], $_scenario);
 					} elseif ($function == 'triggerValue') {
 						$replace2[$replace_string] = self::triggerValue($_scenario);
+					} elseif ($function == 'triggerId') {
+						$replace2[$replace_string] = self::triggerId($_scenario);
+					} elseif ($function == 'triggerNoChange') {
+						$replace2[$replace_string] = self::triggerNoChange($arguments[0], $_scenario);
 					} elseif ($function == 'tag') {
 						if (!isset($arguments[0])) {
 							$arguments[0] = '';
@@ -1565,7 +1599,7 @@ class scenarioExpression {
 					} catch (Error $ex) {
 						$result = $options['value'];
 					}
-					$this->setLog($scenario, __('Affectation de la variable', __FILE__) . ' ' . $this->getOptions('name') . ' => ' . $options['value'] . ' = ' . $result);
+					$this->setLog($scenario, __('Affectation de la variable', __FILE__) . ' ' . $this->getOptions('name') . ' => ' . $result . ' (' . $options['value'] . ')');
 					$dataStore = new dataStore();
 					$dataStore->setKey($this->getOptions('name'));
 					$dataStore->setValue($result);
@@ -1610,7 +1644,13 @@ class scenarioExpression {
 					$dataStore->setLink_id(-1);
 					$dataStore->save();
 					$limit = (isset($options['timeout'])) ? $options['timeout'] : 300;
-					$options_cmd = array('title' => $options['question'], 'message' => $options['question'], 'answer' => explode(';', $options['answer']), 'timeout' => $limit, 'variable' => $options['variable']);
+					$answer = explode(';', $options['answer']);
+					if (($key = array_search('*', $answer)) !== false) {
+						unset($answer[$key]);
+						if (count($answer) >= 1) $answer = array_values($answer);
+						else $answer = array("");
+					}
+					$options_cmd = array('title' => $options['question'], 'message' => $options['question'], 'answer' => $answer, 'timeout' => $limit, 'variable' => $options['variable']);
 
 					if ($scenario !== null) {
 						$tags = $scenario->getTags();
@@ -1627,7 +1667,7 @@ class scenarioExpression {
 					$this->setLog($scenario, __('Demande', __FILE__) . ' ' . json_encode($options_cmd));
 					$cmd->setCache('ask::variable', $options['variable']);
 					$cmd->setCache('ask::endtime', strtotime('now') + $limit);
-					$cmd->setCache('ask::answer', $options_cmd['answer']);
+					$cmd->setCache('ask::answer', explode(';', $options['answer']));
 					$cmd->execCmd($options_cmd);
 					$occurence = 0;
 					$value = '';

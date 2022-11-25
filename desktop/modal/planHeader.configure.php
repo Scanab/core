@@ -184,7 +184,7 @@ $('.bt_configurePlanComposant').off('click').on('click', function() {
 })
 
 $('.planHeaderAttr[data-l1key=configuration][data-l2key=icon]').on('dblclick', function() {
-  $('.planHeaderAttr[data-l1key=configuration][data-l2key=icon]').value('')
+  this.jeeValue('')
 })
 
 $('#bt_chooseIcon').on('click', function() {
@@ -220,7 +220,7 @@ $('#bt_removeBackgroundImage').on('click', function() {
 
 $('#bt_saveConfigurePlanHeader').on('click', function() {
   jeedom.plan.saveHeader({
-    planHeader: $('#div_planHeaderConfigure').getValues('.planHeaderAttr')[0],
+    planHeader: document.getElementById('div_planHeaderConfigure').getJeeValues('.planHeaderAttr')[0],
     error: function(error) {
       $('#div_alertPlanHeaderConfigure').showAlert({message: error.message, level: 'danger'})
     },
@@ -233,6 +233,6 @@ $('#bt_saveConfigurePlanHeader').on('click', function() {
 })
 
 if (isset(jeephp2js.md_planHeaderConfigure_Id) && jeephp2js.md_planHeaderConfigure_Id != '') {
-  $('#div_planHeaderConfigure').setValues(jeephp2js.md_planHeaderConfigure_planHeader, '.planHeaderAttr')
+  document.getElementById('div_planHeaderConfigure').setJeeValues(jeephp2js.md_planHeaderConfigure_planHeader, '.planHeaderAttr')
 }
 </script>

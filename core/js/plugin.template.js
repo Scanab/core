@@ -236,11 +236,11 @@ $(".eqLogicDisplayCard").on('click', function(event) {
         })
       },
       success: function(data) {
-        $('body .eqLogicAttr').value('')
+        document.getElementById('div_pageContainer').querySelectorAll('.eqLogicAttr').jeeValue('')
         if (isset(data) && isset(data.timeout) && data.timeout == 0) {
           data.timeout = ''
         }
-        $('body').setValues(data, '.eqLogicAttr')
+        document.querySelector('#div_mainContainer').setJeeValues(data, '.eqLogicAttr')
         if (!isset(data.category.opening)) $('input[data-l2key="opening"]').prop('checked', false)
 
         if ('function' == typeof(printEqLogic)) {
@@ -321,15 +321,17 @@ $('.eqLogicDisplayCard').off('mouseup').on('mouseup', function(event) {
 
 /**************************EqLogic*********************************************/
 $('.eqLogicAction[data-action=copy]').off('click').on('click', function() {
-  if ($('.eqLogicAttr[data-l1key=id]').value() != undefined && $('.eqLogicAttr[data-l1key=id]').value() != '') {
+  var name = document.querySelector('.eqLogicAttr[data-l1key="name"]').jeeValue()
+  var id = document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue()
+  if (id != undefined && id != '') {
     bootbox.prompt({
       size: 'small',
-      value: $('.eqLogicAttr[data-l1key=name]').value(),
+      value: name,
       title: '{{Nom de la copie de l\'équipement ?}}',
       callback: function(result) {
         if (result !== null) {
           jeedom.eqLogic.copy({
-            id: $('.eqLogicAttr[data-l1key=id]').value(),
+            id: id,
             name: result,
             error: function(error) {
               $.fn.showAlert({
@@ -359,16 +361,16 @@ $('.eqLogicAction[data-action=copy]').off('click').on('click', function() {
 })
 
 $('.eqLogicAction[data-action=export]').off('click').on('click', function() {
-  window.open('core/php/export.php?type=eqLogic&id=' + $('.eqLogicAttr[data-l1key=id]').value(), "_blank", null)
+  window.open('core/php/export.php?type=eqLogic&id=' + document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue(), "_blank", null)
 })
 
 $('.eqLogicAction[data-action=save]').off('click').on('click', function() {
   var eqLogics = []
   $('.eqLogic').each(function() {
     if ($(this).is(':visible')) {
-      var eqLogic = $(this).getValues('.eqLogicAttr')
+      var eqLogic = this.getJeeValues('.eqLogicAttr')
       eqLogic = eqLogic[0]
-      eqLogic.cmd = $(this).find('.cmd').getValues('.cmdAttr')
+      eqLogic.cmd = this.querySelectorAll('.cmd').getJeeValues('.cmdAttr')
       if ('function' == typeof(saveEqLogic)) {
         eqLogic = saveEqLogic(eqLogic)
       }
@@ -414,9 +416,9 @@ $('.eqLogicAction[data-action=save]').off('click').on('click', function() {
 })
 
 $('.eqLogicAction[data-action=remove]').off('click').on('click', function() {
-  if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
+  if (document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue() != undefined) {
     jeedom.eqLogic.getUseBeforeRemove({
-      id: $('.eqLogicAttr[data-l1key=id]').value(),
+      id: document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue(),
       error: function(error) {
         $.fn.showAlert({
           message: error.message,
@@ -424,7 +426,7 @@ $('.eqLogicAction[data-action=remove]').off('click').on('click', function() {
         })
       },
       success: function(data) {
-        var text = '{{Êtes-vous sûr de vouloir supprimer l\'équipement}} ' + eqType + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?'
+        var text = '{{Êtes-vous sûr de vouloir supprimer l\'équipement}} ' + eqType + ' <b>' + document.querySelector('.eqLogicAttr[data-l1key="name"]').jeeValue() + '</b> ?'
         if (Object.keys(data).length > 0) {
           text += ' </br> {{Il est utilisé par ou utilise :}}</br>'
           var complement = null
@@ -441,7 +443,7 @@ $('.eqLogicAction[data-action=remove]').off('click').on('click', function() {
           if (result) {
             jeedom.eqLogic.remove({
               type: isset($(this).attr('data-eqLogic_type')) ? $(this).attr('data-eqLogic_type') : eqType,
-              id: $('.eqLogicAttr[data-l1key=id]').value(),
+              id: document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue(),
               error: function(error) {
                 $.fn.showAlert({
                   message: error.message,
@@ -507,11 +509,11 @@ $('.eqLogicAction[data-action=add]').off('click').on('click', function() {
 $('.eqLogic .eqLogicAction[data-action=configure]').off('click').on('click', function() {
   var eqName = $('input.eqLogicAttr[data-l1key="name"]')
   eqName = (eqName.length ? ' : ' + eqName.val() : '')
-  $('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + $('.eqLogicAttr[data-l1key=id]').value()).dialog('open')
+  $('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue()).dialog('open')
 });
 
 $('#in_searchEqlogic').off('keyup').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     $('.eqLogicDisplayCard').show()
     return
@@ -565,12 +567,12 @@ $('#div_pageContainer').on('click', '.cmd .cmdAction[data-action=remove]', funct
 
 $('#div_pageContainer').on('click', '.cmd .cmdAction[data-action=copy]', function() {
   modifyWithoutSave = true
-  var cmd = $(this).closest('.cmd').getValues('.cmdAttr')[0]
+  var cmd = this.closest('.cmd').getJeeValues('.cmdAttr')[0]
   cmd.id = ''
-  if(typeof addCmdToTable == 'function'){
+  if (typeof addCmdToTable == 'function') {
     addCmdToTable(cmd)
-  }else{
-    addCmdToTableDefault(cmd);
+  } else {
+    addCmdToTableDefault(cmd)
   }
 })
 
@@ -678,22 +680,23 @@ $("img.lazy").each(function() {
 
 
 function addCmdToTableDefault(_cmd) {
-  if($('#table_cmd thead').text() == ''){
+  if (document.getElementById('table_cmd') == null) return
+  if (document.querySelector('#table_cmd thead') == null) {
     table = '<thead>';
-		table += '<tr>';
-		table += '<th>{{Id}}</th>';
-		table += '<th>{{Nom}}</th>';
-		table += '<th>{{Type}}</th>';
-		table += '<th>{{Logical ID}}</th>';
-		table += '<th>{{Options}}</th>';
-		table += '<th>{{Paramètres}}</th>';
-		table += '<th>{{Etat}}</th>';
-		table += '<th>{{Action}}</th>';
-		table += '</tr>';
-		table += '</thead>';
-		table += '<tbody>';
-		table += '</tbody>';
-    $('#table_cmd').append(table);
+    table += '<tr>';
+    table += '<th>{{Id}}</th>';
+    table += '<th>{{Nom}}</th>';
+    table += '<th>{{Type}}</th>';
+    table += '<th>{{Logical ID}}</th>';
+    table += '<th>{{Options}}</th>';
+    table += '<th>{{Paramètres}}</th>';
+    table += '<th>{{Etat}}</th>';
+    table += '<th>{{Action}}</th>';
+    table += '</tr>';
+    table += '</thead>';
+    table += '<tbody>';
+    table += '</tbody>';
+    document.getElementById('table_cmd').insertAdjacentHTML('beforeend', table)
   }
   if (!isset(_cmd)) {
     var _cmd = {configuration: {}};
@@ -701,7 +704,7 @@ function addCmdToTableDefault(_cmd) {
   if (!isset(_cmd.configuration)) {
     _cmd.configuration = {};
   }
-  var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
+  var tr = '<tr>';
   tr += '<td style="min-width:50px;width:70px;">';
   tr += '<span class="cmdAttr" data-l1key="id"></span>';
   tr += '</td>';
@@ -753,18 +756,23 @@ function addCmdToTableDefault(_cmd) {
   tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
   tr += '</td>';
   tr += '</tr>';
-  $('#table_cmd tbody').append(tr);
-  var tr = $('#table_cmd tbody tr').last();
+
+  let newRow = document.createElement('tr')
+  newRow.innerHTML = tr
+  newRow.addClass('cmd')
+  newRow.setAttribute('data-cmd_id', init(_cmd.id))
+  document.getElementById('table_cmd').querySelector('tbody').appendChild(newRow)
+
   jeedom.eqLogic.buildSelectCmd({
-    id: $('.eqLogicAttr[data-l1key=id]').value(),
+    id: document.querySelector('.eqLogicAttr[data-l1key="id"]').jeeValue(),
     filter: {type: 'info'},
     error: function (error) {
-      $('#div_alert').showAlert({message: error.message, level: 'danger'});
+      $('#div_alert').showAlert({message: error.message, level: 'danger'})
     },
     success: function (result) {
-      tr.find('.cmdAttr[data-l1key=value]').append(result);
-      tr.setValues(_cmd, '.cmdAttr');
-      jeedom.cmd.changeType(tr, init(_cmd.subType));
+      newRow.querySelector('.cmdAttr[data-l1key="value"]').insertAdjacentHTML('beforeend', result)
+      newRow.setJeeValues(_cmd, '.cmdAttr')
+      jeedom.cmd.changeType(newRow, init(_cmd.subType))
     }
   });
 }

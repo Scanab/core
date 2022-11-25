@@ -299,7 +299,7 @@ if (count($market->getImg('screenshot')) > 0) {
 		slidesToScroll: 1
 	});
 
-	$('body').setValues(market_display_info, '.marketAttr');
+	document.querySelector('#div_mainContainer').setJeeValues(market_display_info, '.marketAttr')
 
 	$('#div_alertMarketDisplay').closest('.ui-dialog').find('.ui-dialog-title').text('Market - ' + market_display_info_category);
 
@@ -363,7 +363,7 @@ if (count($market->getImg('screenshot')) > 0) {
 	});
 
 	$('#in_myRating').on('change', function() {
-		var id = $('.marketAttr[data-l1key=id]').value();
+		var id = document.querySelector('.marketAttr[data-l1key="id"]').jeeValue()
 		jeedom.repo.setRating({
 			id: id,
 			repo: 'market',

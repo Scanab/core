@@ -62,7 +62,7 @@ if (!jeeFrontEnd.md_history) {
       this.$pageContainer = $('#md_history')
       this.resizeDone = null
       delete jeedom.history.chart[this.__el__]
-      $.clearDivContent(this.__el__)
+      document.emptyById(this.__el__)
 
       this.md_modal = $('#md_history').parents('.ui-dialog-content.ui-widget-content')
       this.modal = this.md_modal.parents('.ui-dialog.ui-resizable')
@@ -97,8 +97,8 @@ if (!jeeFrontEnd.md_history) {
           cmd_id: cmd_id,
           el: self.__el__,
           dateRange: 'all',
-          dateStart: $('#in_startDate').value(),
-          dateEnd:  $('#in_endDate').value(),
+          dateStart: document.getElementById('in_startDate').value,
+          dateEnd: document.getElementById('in_endDate').value,
           newGraph: false,
           showLegend: (self.loadIds.length > 1) ? true : false,
           height: jQuery(window).height() - 270,
@@ -147,7 +147,7 @@ if (!jeeFrontEnd.md_history) {
 }
 
 (function() {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   var jeeM = jeeFrontEnd.md_history
   jeeM.init(jeephp2js.md_history_cmdId)
 

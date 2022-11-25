@@ -124,9 +124,9 @@ if (!jeeFrontEnd.administration) {
       tr += '<td><a class="objectSummaryAction cursor" data-l1key="remove"><i class="fas fa-minus-circle"></i></a></td>'
 
       tr += '</tr>'
-      $('#table_objectSummary tbody').append(tr)
+      document.querySelector('#table_objectSummary tbody').insertAdjacentHTML('beforeend', tr)
       if (isset(_summary)) {
-        $('#table_objectSummary tbody tr').last().setValues(_summary, '.objectSummaryAttr')
+        document.querySelectorAll('#table_objectSummary tbody tr').last().setJeeValues(_summary, '.objectSummaryAttr')
       }
       if (isset(_summary) && isset(_summary.key) && _summary.key != '') {
         $('#table_objectSummary tbody tr:last .objectSummaryAttr[data-l1key=key]').attr('disabled', 'disabled')
@@ -135,7 +135,7 @@ if (!jeeFrontEnd.administration) {
     },
     saveObjectSummary: function() {
       var summary = {}
-      var temp = $('#table_objectSummary tbody tr').getValues('.objectSummaryAttr')
+      var temp = document.querySelectorAll('#table_objectSummary tbody tr').getJeeValues('.objectSummaryAttr')
       for (var i in temp) {
         if (temp[i].key == '') {
           temp[i].key = temp[i].name
@@ -151,7 +151,7 @@ if (!jeeFrontEnd.administration) {
         url: "core/ajax/config.ajax.php",
         data: {
           action: 'addKey',
-          value: json_encode(value)
+          value: JSON.stringify(value)
         },
         dataType: 'json',
         error: function(request, status, error) {
@@ -242,8 +242,9 @@ if (!jeeFrontEnd.administration) {
       var actionOption_id = jeedomUtils.uniqId()
       div += '<div class="col-sm-5 actionOptions" id="' + actionOption_id + '"></div>'
       div += '</div>'
-      $('#div_actionOnMessage'+_channel).append(div)
-      $('#div_actionOnMessage'+_channel+' .actionOnMessage').last().setValues(_action, '.expressionAttr')
+      document.querySelector('#div_actionOnMessage'+_channel).insertAdjacentHTML('beforeend', div)
+      document.querySelectorAll('#div_actionOnMessage'+_channel+' .actionOnMessage').last().setJeeValues(_action, '.expressionAttr')
+
       jeeP.actionOptions.push({
         expression: init(_action.cmd, ''),
         options: _action.options,
@@ -367,16 +368,16 @@ if (!jeeFrontEnd.administration) {
     saveConvertColor: function() {
       var value = {}
       var colors = {}
-      $('#table_convertColor tbody tr').each(function() {
-        colors[$(this).find('.color').value()] = $(this).find('.html').value()
-      });
+      document.querySelectorAll('#table_convertColor tbody tr').forEach(function (element) {
+        colors[element.querySelector('.color').jeeValue()] = element.querySelector('.html').jeeValue()
+      })
       value.convertColor = colors
       $.ajax({
         type: "POST",
         url: "core/ajax/config.ajax.php",
         data: {
           action: 'addKey',
-          value: json_encode(value)
+          value: JSON.stringify(value)
         },
         dataType: 'json',
         error: function(request, status, error) {
@@ -410,7 +411,7 @@ document.onkeydown = function(event) {
 }
 
 $(function() {
-  $.showLoading()
+  jeedomUtils.showLoading()
   if (getUrlVars('panel') != false) {
     $('a[href="#' + getUrlVars('panel') + '"]').click()
   }
@@ -427,7 +428,7 @@ $(function() {
 
 //searching
 $('#in_searchConfig').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
 
   //place back found els with random numbered span to place them back to right place. Avoid cloning els for better saving.
   $('span[searchId]').each(function() {
@@ -436,7 +437,7 @@ $('#in_searchConfig').keyup(function() {
     $(this).replaceWith(el)
   })
 
-  $.clearDivContent('searchResult')
+  document.emptyById('searchResult')
   if (search == '') {
     $('.nav-tabs.nav-primary, .tab-content').show()
     jeedomUtils.dateTimePickerInit()
@@ -496,7 +497,7 @@ $('#bt_resetConfigSearch').on('click', function() {
 
 //load configuration settings
 jeedom.config.load({
-  configuration: $('#config').getValues('.configKey:not(.noSet)')[0],
+  configuration: document.querySelectorAll('#config').getJeeValues('.configKey:not(.noSet)')[0],
   error: function(error) {
     $.fn.showAlert({
       message: error.message,
@@ -504,7 +505,7 @@ jeedom.config.load({
     })
   },
   success: function(data) {
-    $('#config').setValues(data, '.configKey')
+    document.querySelector('#config').setJeeValues(data, '.configKey')
     $('.configKey[data-l1key="market::allowDNS"]').trigger('change')
     $('.configKey[data-l1key="ldap:enable"]').trigger('change')
     jeeP.loadActionOnMessage()
@@ -514,18 +515,18 @@ jeedom.config.load({
     if (jeedom.theme['interface::background::tools'] != '/data/backgrounds/config_tools.jpg') $('a.bt_removeBackgroundImage[data-page=tools]').addClass('disabled')
     jeeFrontEnd.modifyWithoutSave = false
 
-    jeeP.configReload = $('#config').getValues('.configKey[data-reload="1"]')[0]
+    jeeP.configReload = document.querySelectorAll('#config').getJeeValues('.configKey[data-reload="1"]')[0]
   }
 })
 
 $("#bt_saveGeneraleConfig").off('click').on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeeP.saveConvertColor()
   jeeP.saveObjectSummary()
-  var config = $('#config').getValues('.configKey')[0]
+  var config = document.querySelectorAll('#config').getJeeValues('.configKey')[0]
   $('.bt_addActionOnMessage').each(function(){
     let channel = $(this).attr('data-channel');
-    config['actionOnMessage'+channel] = json_encode($('#div_actionOnMessage'+channel+' .actionOnMessage').getValues('.expressionAttr'))
+    config['actionOnMessage'+channel] = JSON.stringify(document.querySelectorAll('#div_actionOnMessage'+channel+' .actionOnMessage').getJeeValues('.expressionAttr'))
   })
   jeedom.config.save({
     configuration: config,
@@ -537,7 +538,7 @@ $("#bt_saveGeneraleConfig").off('click').on('click', function(event) {
     },
     success: function() {
       jeedom.config.load({
-        configuration: $('#config').getValues('.configKey:not(.noSet)')[0],
+        configuration: document.querySelectorAll('#config').getJeeValues('.configKey:not(.noSet)')[0],
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -556,7 +557,6 @@ $("#bt_saveGeneraleConfig").off('click').on('click', function(event) {
           } catch (error) {
             reloadPage = true
           }
-
           if (reloadPage) {
             var url = 'index.php?v=d&p=administration&saveSuccessFull=1'
             if (window.location.hash != '') {
@@ -565,7 +565,7 @@ $("#bt_saveGeneraleConfig").off('click').on('click', function(event) {
             window.history.pushState({}, document.title, url)
             window.location.reload(true)
           } else {
-            $('#config').setValues(data, '.configKey')
+            document.querySelector('#config').setJeeValues(data, '.configKey')
             jeeP.loadActionOnMessage()
             jeeFrontEnd.modifyWithoutSave = false
             setTimeout(function() {
@@ -575,7 +575,7 @@ $("#bt_saveGeneraleConfig").off('click').on('click', function(event) {
               message: '{{Sauvegarde réussie}}',
               level: 'success'
             })
-            jeeP.configReload = $('#config').getValues('.configKey[data-reload="1"]')[0]
+            jeeP.configReload = document.querySelectorAll('#config').getJeeValues('.configKey[data-reload="1"]')[0]
           }
         }
       })
@@ -589,7 +589,7 @@ jeeP.$divConfig.off('change', '.configKey').on('change', '.configKey:visible', f
 
 /**************************GENERAL***********************************/
 $('#bt_forceSyncHour').on('click', function() {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeedom.forceSyncHour({
     error: function(error) {
       $.fn.showAlert({
@@ -733,15 +733,22 @@ jeeP.$divConfig.on({
 /**************************NETWORK***********************************/
 jeeP.$divConfig.on({
   'change': function(event) {
+    let externalAddr = document.querySelector('.configKey[data-l1key="externalAddr"]')
+    let externalPort = document.querySelector('.configKey[data-l1key="externalPort"]')
+    let externalComplement = document.querySelector('.configKey[data-l1key="externalComplement"]')
     setTimeout(function() {
-      if ($('.configKey[data-l1key="market::allowDNS"]').value() == 1 && $('.configKey[data-l1key="network::disableMangement"]').value() == 0) {
-        $('.configKey[data-l1key=externalProtocol]').attr('disabled', true)
-        $('.configKey[data-l1key=externalAddr]').attr('disabled', true).value('')
-        $('.configKey[data-l1key=externalPort]').attr('disabled', true).value('')
+      if (document.querySelector('.configKey[data-l1key="market::allowDNS"]').jeeValue() == 1 && document.querySelector('.configKey[data-l1key="network::disableMangement"]').jeeValue() == 0) {
+        document.querySelector('.configKey[data-l1key="externalProtocol"]').setAttribute('disabled', '')
+        externalAddr.setAttribute('disabled', '')
+        externalAddr.jeeValue('')
+        externalPort.setAttribute('disabled', '')
+        externalPort.jeeValue('')
+        externalComplement.setAttribute('disabled', '')
+        externalComplement.jeeValue('')
       } else {
-        $('.configKey[data-l1key=externalProtocol]').attr('disabled', false)
-        $('.configKey[data-l1key=externalAddr]').attr('disabled', false)
-        $('.configKey[data-l1key=externalPort]').attr('disabled', false)
+        externalAddr.removeAttribute('disabled')
+        externalPort.removeAttribute('disabled')
+        externalComplement.removeAttribute('disabled')
       }
     }, 100)
   }
@@ -773,9 +780,9 @@ $('#bt_networkTab').on('click', function() {
 })
 
 $('#bt_restartDns').on('click', function() {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeedom.config.save({
-    configuration: $('#config').getValues('.configKey')[0],
+    configuration: document.querySelectorAll('#config').getJeeValues('.configKey')[0],
     error: function(error) {
       $.fn.showAlert({
         message: error.message,
@@ -800,9 +807,9 @@ $('#bt_restartDns').on('click', function() {
 })
 
 $('#bt_haltDns').on('click', function() {
-  $.hideAlert();
+  jeedomUtils.hideAlert();
   jeedom.config.save({
-    configuration: $('#config').getValues('.configKey')[0],
+    configuration: document.querySelectorAll('#config').getJeeValues('.configKey')[0],
     error: function(error) {
       $.fn.showAlert({
         message: error.message,
@@ -846,9 +853,10 @@ $('#bt_removeTimelineEvent').on('click', function() {
 
 jeeP.$divConfig.on({
   'change': function(event) {
-    $('.logEngine').hide()
-    if ($(this).value() == '') return
-    $('.logEngine.' + $(this).value()).show()
+    document.querySelectorAll('.logEngine').unseen()
+    if (this.value == '') return
+    let element = document.querySelector('.logEngine.' + this.value)
+    if (element !== null) element.seen()
   }
 }, '.configKey[data-l1key="log::engine"]')
 
@@ -866,11 +874,11 @@ jeeP.$divConfig.on({
 
 jeeP.$divConfig.on({
   'focusout': function(event) {
-    var expression = $(this).closest('.actionOnMessage').getValues('.expressionAttr')
-    var el = $(this)
+    var expression = this.closest('.actionOnMessage').getJeeValues('.expressionAttr')
+    var el = this
     if (expression[0] && expression[0].options) {
-      jeedom.cmd.displayActionOption($(this).value(), init(expression[0].options), function(html) {
-        el.closest('.actionOnMessage').find('.actionOptions').html(html)
+      jeedom.cmd.displayActionOption(this.value, init(expression[0].options), function(html) {
+        el.closest('.actionOnMessage').querySelector('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     }
@@ -879,15 +887,15 @@ jeeP.$divConfig.on({
 
 jeeP.$divConfig.on({
   'click': function(event) {
-    var el = $(this).closest('.actionOnMessage').find('.expressionAttr[data-l1key=cmd]')
+    var el = this.closest('.actionOnMessage').querySelector('.expressionAttr[data-l1key=cmd]')
     jeedom.cmd.getSelectModal({
       cmd: {
         type: 'action'
       }
     }, function(result) {
-      el.value(result.human)
-      jeedom.cmd.displayActionOption(el.value(), '', function(html) {
-        el.closest('.actionOnMessage').find('.actionOptions').html(html)
+      el.jeeValue(result.human)
+      jeedom.cmd.displayActionOption(result.human, '', function(html) {
+        el.closest('.actionOnMessage').querySelector('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     })
@@ -896,11 +904,11 @@ jeeP.$divConfig.on({
 
 jeeP.$divConfig.on({
   'click': function(event) {
-    var el = $(this).closest('.actionOnMessage').find('.expressionAttr[data-l1key=cmd]')
+    var el = this.closest('.actionOnMessage').querySelector('.expressionAttr[data-l1key=cmd]')
     jeedom.getSelectActionModal({}, function(result) {
-      el.value(result.human)
-      jeedom.cmd.displayActionOption(el.value(), '', function(html) {
-        el.closest('.actionOnMessage').find('.actionOptions').html(html)
+      el.jeeValue(result.human)
+      jeedom.cmd.displayActionOption(result.human, '', function(html) {
+        el.closest('.actionOnMessage').querySelector('.actionOptions').html(html)
         jeedomUtils.taAutosize()
       })
     })
@@ -915,7 +923,7 @@ $('.bt_selectAlertCmd').on('click', function() {
       subType: 'message'
     }
   }, function(result) {
-    $('.configKey[data-l1key="alert::' + type + 'Cmd"]').atCaret('insert', result.human)
+    document.querySelector('.configKey[data-l1key="alert::' + type + 'Cmd"]').insertAtCursor(result.human)
   })
 })
 
@@ -926,7 +934,7 @@ $('.bt_selectWarnMeCmd').on('click', function() {
       subType: 'message'
     }
   }, function(result) {
-    $('.configKey[data-l1key="interact::warnme::defaultreturncmd"]').value(result.human)
+    document.querySelectorAll('.configKey[data-l1key="interact::warnme::defaultreturncmd"]').jeeValue(result.human)
   })
 })
 
@@ -994,13 +1002,13 @@ jeeP.$divConfig.on({
 
 jeeP.$divConfig.on({
   'click': function(event) {
-    var objectSummary = $(this).closest('.objectSummary')
+    var objectSummary = this.closest('.objectSummary').querySelectorAll('.objectSummaryAttr[data-l1key=key]').jeeValue()
     $.ajax({
       type: "POST",
       url: "core/ajax/object.ajax.php",
       data: {
         action: "createSummaryVirtual",
-        key: objectSummary.find('.objectSummaryAttr[data-l1key=key]').value()
+        key: objectSummary
       },
       dataType: 'json',
       error: function(request, status, error) {
@@ -1025,7 +1033,7 @@ jeeP.$divConfig.on({
 
 jeeP.$divConfig.on({
   'dblclick': function(event) {
-    $(this).value('')
+    this.innerHTML = ''
   }
 }, '.objectSummary .objectSummaryAttr[data-l1key=icon], .objectSummary .objectSummaryAttr[data-l1key=iconnul]')
 
@@ -1097,17 +1105,17 @@ $('#bt_addColorConvert').on('click', function() {
 /**************************SECURITY***********************************/
 jeeP.$divConfig.on({
   'change': function(event) {
-    if ($(this).value() == 1) {
-      $('#div_config_ldap').show()
+    if (this.checked) {
+      document.getElementById('div_config_ldap').seen()
     } else {
-      $('#div_config_ldap').hide()
+      document.getElementById('div_config_ldap').unseen()
     }
   }
 }, '.configKey[data-l1key="ldap:enable"]')
 
 $("#bt_testLdapConnection").on('click', function(event) {
   jeedom.config.save({
-    configuration: $('#config').getValues('.configKey')[0],
+    configuration: document.querySelectorAll('#config').getJeeValues('.configKey')[0],
     error: function(error) {
       $.fn.showAlert({
         message: error.message,
@@ -1161,17 +1169,17 @@ $('#bt_removeBanIp').on('click', function() {
 
 /**************************UPDATES / MARKET***********************************/
 jeeP.$divConfig.off('change', '.enableRepository').on('change', '.enableRepository', function() {
-  if ($(this).value() == 1) {
-    $('.repositoryConfiguration' + $(this).attr('data-repo')).show()
+  if (this.checked) {
+    document.querySelectorAll('.repositoryConfiguration' + this.getAttribute('data-repo')).seen()
   } else {
-    $('.repositoryConfiguration' + $(this).attr('data-repo')).hide()
+    document.querySelectorAll('.repositoryConfiguration' + this.getAttribute('data-repo')).unseen()
   }
 })
 
 $('.testRepoConnection').on('click', function() {
   var repo = $(this).attr('data-repo')
   jeedom.config.save({
-    configuration: $('#config').getValues('.configKey')[0],
+    configuration: document.querySelectorAll('#config').getJeeValues('.configKey')[0],
     error: function(error) {
       $.fn.showAlert({
         message: error.message,
@@ -1180,7 +1188,7 @@ $('.testRepoConnection').on('click', function() {
     },
     success: function() {
       jeedom.config.load({
-        configuration: $('#config').getValues('.configKey:not(.noSet)')[0],
+        configuration: document.querySelectorAll('#config').getJeeValues('.configKey:not(.noSet)')[0],
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -1188,7 +1196,7 @@ $('.testRepoConnection').on('click', function() {
           })
         },
         success: function(data) {
-          $('#config').setValues(data, '.configKey')
+          document.querySelector('#config').setJeeValues(data, '.configKey')
           jeeFrontEnd.modifyWithoutSave = false
           jeedom.repo.test({
             repo: repo,
@@ -1214,19 +1222,20 @@ $('.testRepoConnection').on('click', function() {
 /**************************CACHE***********************************/
 jeeP.$divConfig.on({
   'change': function(event) {
-    $('.cacheEngine').hide()
-    if ($(this).value() == '') return
-    $('.cacheEngine.' + $(this).value()).show()
+    document.querySelectorAll('.cacheEngine').unseen()
+    if (this.value == '') return
+    let element = document.querySelector('.cacheEngine.' + this.value)
+    if (element !== null) element.seen()
   }
 }, '.configKey[data-l1key="cache::engine"]')
 
 $("#bt_cleanCache").on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeeP.cleanCache()
 })
 
 $("#bt_flushCache").on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   bootbox.confirm('{{Attention ceci est une opération risquée (vidage du cache), Confirmez vous vouloir la faire ?}}', function(result) {
     if (result) {
       jeeP.flushCache()
@@ -1235,14 +1244,14 @@ $("#bt_flushCache").on('click', function(event) {
 })
 
 $("#bt_flushWidgetCache").on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeeP.flushWidgetCache()
 })
 
 /**************************API***********************************/
 $(".bt_regenerate_api").on('click', function(event) {
-  $.hideAlert()
-  var el = $(this)
+  jeedomUtils.hideAlert()
+  var el = this
   bootbox.confirm('{{Êtes-vous sûr de vouloir réinitialiser la clé API de}}' + ' ' + el.attr('data-plugin') + ' ?', function(result) {
     if (result) {
       $.ajax({
@@ -1264,7 +1273,7 @@ $(".bt_regenerate_api").on('click', function(event) {
             })
             return
           }
-          el.closest('.input-group').find('.span_apikey').value(data.result)
+          el.closest('.input-group').querySelectorAll('.span_apikey').jeeValue(data.result)
         }
       })
     }
@@ -1353,9 +1362,9 @@ $('#table_convertColor tbody').off('click', '.removeConvertColor').on('click', '
 
 //CMD color
 $('.bt_resetColor').on('click', function() {
-  var el = $(this);
+  var el = this
   jeedom.getConfiguration({
-    key: $(this).attr('data-l1key'),
+    key: el.getAttribute('data-l1key'),
     default: 1,
     error: function(error) {
       $.fn.showAlert({
@@ -1364,7 +1373,7 @@ $('.bt_resetColor').on('click', function() {
       })
     },
     success: function(data) {
-      $('.configKey[data-l1key="' + el.attr('data-l1key') + '"]').value(data)
+      document.querySelectorAll('.configKey[data-l1key="' + el.getAttribute('data-l1key') + '"]').jeeValue(data)
     }
   })
 })

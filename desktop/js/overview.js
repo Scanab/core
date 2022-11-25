@@ -158,7 +158,8 @@ if (!jeeFrontEnd.overview) {
                   })
 
                   self.$summaryContainer.packery({
-                    gutter: 10
+                    gutter: parseInt(jeedom.theme['widget::margin']) * 2,
+                    isLayoutInstant: true
                   })
 
                   //check is inside screen:
@@ -320,9 +321,9 @@ jeeP.$modal.dialog({
   width: 500,
   height: 200,
   position: {
-    my: 'left top',
-    at: 'left+19 top+96',
-    of: window
+    my: 'center top',
+    at: 'center center-100',
+    of: $('#div_pageContainer')
   },
   open: function() {
     $('.ui-widget-overlay.ui-front').css('display', 'none')

@@ -102,7 +102,7 @@ jeedom.scenario.saveAll = function(_params) {
   paramsAJAX.url = 'core/ajax/scenario.ajax.php';
   paramsAJAX.data = {
     action: 'saveAll',
-    scenarios: json_encode(_params.scenarios),
+    scenarios: JSON.stringify(_params.scenarios),
   };
   $.ajax(paramsAJAX);
 }
@@ -121,7 +121,7 @@ jeedom.scenario.toHtml = function(_params) {
   paramsAJAX.url = 'core/ajax/scenario.ajax.php';
   paramsAJAX.data = {
     action: 'toHtml',
-    id: ($.isArray(_params.id)) ? json_encode(_params.id) : _params.id,
+    id: ($.isArray(_params.id)) ? JSON.stringify(_params.id) : _params.id,
     version: _params.version
   };
   $.ajax(paramsAJAX);
@@ -364,7 +364,7 @@ jeedom.scenario.save = function(_params) {
   paramsAJAX.url = 'core/ajax/scenario.ajax.php';
   paramsAJAX.data = {
     action: 'save',
-    scenario: json_encode(_params.scenario)
+    scenario: JSON.stringify(_params.scenario)
   };
   $.ajax(paramsAJAX);
 }
@@ -501,7 +501,7 @@ jeedom.scenario.setOrder = function(_params) {
   paramsAJAX.url = 'core/ajax/scenario.ajax.php';
   paramsAJAX.data = {
     action: 'setOrder',
-    scenarios: json_encode(_params.scenarios)
+    scenarios: JSON.stringify(_params.scenarios)
   };
   $.ajax(paramsAJAX);
 }
@@ -586,7 +586,7 @@ jeedom.scenario.setAutoComplete = function(_params) {
   }
 
   _params.parent.find('.expression').each(function() {
-    if ($(this).find('.expressionAttr[data-l1key=type]').value() == 'condition') {
+    if (this.querySelector('.expressionAttr[data-l1key="type"]').value == 'condition') {
       $(this).find('.expressionAttr[data-l1key=' + _params.type + ']').autocomplete({
         minLength: 1,
         source: function(request, response) {
@@ -623,7 +623,7 @@ jeedom.scenario.setAutoComplete = function(_params) {
       })
     }
 
-    if ($(this).find('.expressionAttr[data-l1key=type]').value() == 'action') {
+    if (this.querySelector('.expressionAttr[data-l1key=type]').value == 'action') {
         if ($('body').attr('data-page') == "scenario") {
           jeedom.scenario.autoCompleteActionContext = jeedom.scenario.autoCompleteAction.concat(jeedom.scenario.autoCompleteActionScOnly)
         } else {

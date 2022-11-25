@@ -66,6 +66,10 @@ user::isBan();
 							<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 								<input type="text" class="configKey form-control" data-l1key="name" />
 							</div>
+							<label class="col-lg-2 col-md-3 col-sm-3 col-xs-6 control-label">{{Afficher sur la page de connexion}}</label>
+							<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+								<input type="checkbox" class="configKey form-control" data-l1key="display_name_login" />
+							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-2 col-md-3 col-sm-3 col-xs-6 control-label">{{Langue}}
@@ -433,6 +437,18 @@ user::isBan();
 							</label>
 							<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
 								<input type="number" min="0" class="configKey form-control ui-spinner" data-l1key="widget::margin" data-reload="1" />
+							</div>
+
+							<label class="col-lg-2 col-md-3 col-sm-3 col-xs-6 control-label">{{Dashboard colonnes sur écran large/moyen/petit}}
+								<sup><i class="fas fa-question-circle" tooltip="{{Nombre de colonne sur le dashboard (1 colonne = 1 objet)}}"></i></sup>
+							</label>
+							<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+								<select class="form-control configKey" data-l1key="dahsboard::column::size" data-reload="1">
+									<option value="col-lg-3 col-md-4 col-sm-12">4/3/1</option>
+									<option value="col-lg-4 col-md-6 col-sm-12">3/2/1</option>
+									<option value="col-lg-6 col-md-12">2/1/1</option>
+									<option value="col-sm-12">1/1/1</option>
+								</select>
 							</div>
 						</div>
 						<div class="form-group">

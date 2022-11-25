@@ -24,7 +24,7 @@ if (!jeeFrontEnd.object) {
       this.getObjectList()
     },
     printObject: function(_id) {
-      $.hideAlert()
+      jeedomUtils.hideAlert()
       var objName = $('.objectListContainer .objectDisplayCard[data-object_id="' + _id + '"]').attr('data-object_name')
       var objIcon = $('.objectListContainer .objectDisplayCard[data-object_id="' + _id + '"]').attr('data-object_icon')
       this.loadObjectConfiguration(_id)
@@ -76,13 +76,13 @@ if (!jeeFrontEnd.object) {
           })
         },
         success: function(data) {
-          $('.objectAttr').value('')
+          document.querySelectorAll('.objectAttr').jeeValue('')
           $('.objectAttr[data-l1key=father_id] option').show()
-          $('#summarytab input[type=checkbox]').value(0)
+          document.querySelectorAll('#summarytab input[type=checkbox]').jeeValue(0)
           if (!isset(data.configuration['info::type'])) {
             data.configuration['info::type'] = 'room'
           }
-          $('.object').setValues(data, '.objectAttr')
+          document.querySelectorAll('#div_conf').setJeeValues(data, '.objectAttr')
 
           if (!isset(data.configuration.hideOnOverview)) {
             $('input[data-l2key="hideOnOverview"]').prop('checked', false)
@@ -111,8 +111,8 @@ if (!jeeFrontEnd.object) {
               objectTxtColor = '#ebebeb'
             }
 
-            $('.objectAttr[data-l1key=display][data-l2key=tagColor]').value(objectBkgdColor)
-            $('.objectAttr[data-l1key=display][data-l2key=tagTextColor]').value(objectTxtColor)
+            document.querySelectorAll('.objectAttr[data-l1key=display][data-l2key=tagColor]').jeeValue(objectBkgdColor)
+            document.querySelectorAll('.objectAttr[data-l1key=display][data-l2key=tagTextColor]').jeeValue(objectTxtColor)
 
             $('.objectAttr[data-l1key=display][data-l2key=tagColor]').click(function() {
               $('input[data-l2key="useCustomColor"').prop('checked', true)
@@ -140,7 +140,7 @@ if (!jeeFrontEnd.object) {
               el = $('.type' + i)
               if (el != undefined) {
                 for (var j in summary[i]) {
-                  jeeP.addSummaryInfo(el, summary[i][j])
+                  jeeP.addSummaryInfo('.type' + i, summary[i][j])
                 }
                 if (summary[i].length != 0) {
                   $('.summarytabnumber' + i).append('(' + summary[i].length + ')')
@@ -169,7 +169,7 @@ if (!jeeFrontEnd.object) {
       })
     },
     //-> summary tab
-    addSummaryInfo: function(_el, _summary) {
+    addSummaryInfo: function(_selector, _summary) {
       if (!isset(_summary)) {
         _summary = {}
       }
@@ -192,8 +192,8 @@ if (!jeeFrontEnd.object) {
       div += '<label><input type="checkbox" class="summaryAttr" data-l1key="invert" />{{Inverser}}</label>'
       div += '</div>'
       div += '</div>'
-      _el.find('.div_summary').append(div)
-      _el.find('.summary').last().setValues(_summary, '.summaryAttr')
+      document.querySelector(_selector).querySelector('.div_summary').insertAdjacentHTML('beforeend', div)
+      document.querySelector(_selector).querySelectorAll('.summary').last().setJeeValues(_summary, '.summaryAttr')
     },
     //-> eqLogics tab
     addEqlogicsInfo: function(_id, _objName, _summay) {
@@ -384,7 +384,7 @@ $(function() {
 
 //searching
 $('#in_searchObject').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     $('.objectDisplayCard').show()
     return
@@ -668,7 +668,7 @@ $(function() {
 $('#bt_graphObject').on('click', function() {
   $('#md_modal').dialog({
     title: "{{Graphique des liens}}"
-  }).load('index.php?v=d&modal=graph.link&filter_type=object&filter_id=' + $('.objectAttr[data-l1key=id]').value()).dialog('open')
+  }).load('index.php?v=d&modal=graph.link&filter_type=object&filter_id=' + document.querySelector('.objectAttr[data-l1key="id"]').innerHTML).dialog('open')
 })
 
 $('#bt_libraryBackgroundImage').on('click', function() {
@@ -676,7 +676,7 @@ $('#bt_libraryBackgroundImage').on('click', function() {
     $('.objectImg').show().find('img').replaceWith(_icon)
     $('.objectImg img').attr('width', '240px')
     jeedom.object.uploadImage({
-      id: $('.objectAttr[data-l1key=id]').value(),
+      id: document.querySelector('.objectAttr[data-l1key="id"]').innerHTML,
       file: $('.objectImg img').data('filename'),
       error: function(error) {
         $.fn.showAlert({
@@ -692,7 +692,7 @@ $('#bt_libraryBackgroundImage').on('click', function() {
       }
     })
   }, {
-    object_id: $('.objectAttr[data-l1key=id]').value()
+    object_id: document.querySelector('.objectAttr[data-l1key="id"]').innerHTML
   })
 })
 
@@ -700,7 +700,7 @@ $('#bt_removeBackgroundImage').off('click').on('click', function() {
   bootbox.confirm('{{Êtes-vous sûr de vouloir enlever l\'image de fond de cet objet ?}}', function(result) {
     if (result) {
       jeedom.object.removeImage({
-        id: $('.objectAttr[data-l1key=id]').value(),
+        id: document.querySelector('.objectAttr[data-l1key="id"]').innerHTML,
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -779,11 +779,11 @@ $("#bt_addObject, #bt_addObject2").on('click', function(event) {
 })
 
 $('.objectAttr[data-l1key=display][data-l2key=icon]').on('dblclick', function() {
-  $(this).value('')
+  this.innerHTML = ''
 })
 
-$("#bt_saveObject").on('click', function(event) {
-  var object = $('.object').getValues('.objectAttr')[0]
+document.getElementById('bt_saveObject').addEventListener('click', function (event) {
+  var object = document.querySelectorAll('.object').getJeeValues('.objectAttr')[0]
   if (!isset(object.configuration)) {
     object.configuration = {}
   }
@@ -791,14 +791,14 @@ $("#bt_saveObject").on('click', function(event) {
     object.configuration.summary = {}
   }
 
-  var type, summaries, summary
-  $('.object .div_summary').each(function() {
-    type = $(this).attr('data-type')
+  var type, summaries, data
+  document.querySelectorAll('#summarytab .div_summary').forEach(function(divSummary) {
+    type = divSummary.getAttribute('data-type')
     object.configuration.summary[type] = []
     summaries = {}
-    $(this).find('.summary').each(function() {
-      summary = $(this).getValues('.summaryAttr')[0]
-      object.configuration.summary[type].push(summary)
+    divSummary.querySelectorAll('#summarytab .summary').forEach(function(summary) {
+      data = summary.getJeeValues('.summaryAttr')[0]
+      object.configuration.summary[type].push(data)
     })
   })
 
@@ -823,7 +823,7 @@ $("#bt_saveObject").on('click', function(event) {
 })
 
 $("#bt_removeObject").on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer l\'objet}} <span style="font-weight: bold ;">' + $('.objectDisplayCard.active .name').text().trim() + '</span> ?', function(result) {
     if (result) {
       var removeId = $('.objectDisplayCard.active').attr('data-object_id')
@@ -879,7 +879,7 @@ $('#div_pageContainer').off('change', '.objectAttr').on('change', '.objectAttr:v
 
 $('.addSummary').on('click', function() {
   var type = $(this).attr('data-type')
-  jeeP.addSummaryInfo($('.type' + type))
+  jeeP.addSummaryInfo('.type' + type)
   jeeFrontEnd.modifyWithoutSave = true
 })
 
@@ -898,17 +898,17 @@ $('.bt_checkNone').on('click', function() {
 //cmd info modal autoselect object:
 $('#div_pageContainer').on({
   'click': function(event) {
-    var el = $(this).closest('.summary').find('.summaryAttr[data-l1key=cmd]')
-    var type = $(this).closest('.div_summary').data('type')
+    var el = this.closest('.summary').querySelector('.summaryAttr[data-l1key="cmd"]')
+    var type = this.closest('.div_summary').dataset.type
     jeedom.cmd.getSelectModal({
       object: {
-        id: $('.objectAttr[data-l1key="id"]').value()
+        id: document.querySelector('.objectAttr[data-l1key="id"]').innerHTML
       },
       cmd: {
         type: 'info'
       }
     }, function(result) {
-      el.value(result.human)
+      el.jeeValue(result.human)
       jeeP.updateSummaryTabNbr(type)
       jeeP.updateSummaryButton(result.human, type, true)
     })
@@ -935,7 +935,7 @@ $('.bt_showObjectSummary').off('click').on('click', function() {
 
 //eqLogics tab searching
 $('#in_searchCmds').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     $('#eqLogicsCmds .panel-collapse.in').closest('.panel').find('.accordion-toggle').click()
     return
@@ -966,7 +966,18 @@ $('#bt_resetCmdSearch').on('click', function() {
   $('#in_searchCmds').val('').keyup()
 })
 
+
 //sync eqLogic cmd -> summaryInfo
+$('#eqlogicsTab').on({
+  'click': function(event){
+    if (event.target.type == 'checkbox') return
+    var checkbox = $(this).find('input[type="checkbox"]')
+    checkbox.prop("checked", !checkbox.prop("checked")).change()
+    event.stopPropagation()
+  }
+}, 'ul.dropdown-menu a')
+
+
 $('#eqlogicsTab').on({
   'change': function(event) {
     var type = $(this).data('value')
@@ -983,7 +994,7 @@ $('#eqlogicsTab').on({
     }
     if (el != undefined) {
       if (state) {
-        jeeP.addSummaryInfo(el, summary)
+        jeeP.addSummaryInfo('.type' + type, summary)
       } else {
         el.find('input[data-l1key="cmd"]').each(function() {
           if ($(this).val() == cmd) {
@@ -994,4 +1005,4 @@ $('#eqlogicsTab').on({
       jeeP.updateSummaryTabNbr(type)
     }
   }
-}, 'input[type="checkbox"]')
+}, 'ul.dropdown-menu input[type="checkbox"]')

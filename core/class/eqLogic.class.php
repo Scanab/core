@@ -701,7 +701,6 @@ class eqLogic {
 
 	public function preToHtml($_version = 'dashboard', $_default = array(), $_noCache = false) {
 		global $JEEDOM_INTERNAL_CONFIG;
-		$_version = jeedom::versionAlias($_version);
 		if ($_version == '') {
 			throw new Exception(__('La version demandée ne peut pas être vide (mobile, dashboard ou scénario)', __FILE__));
 		}
@@ -746,7 +745,16 @@ class eqLogic {
 			'#isVerticalAlign#' => (config::byKey('interface::advance::vertCentering', 'core', 0) == 1) ? 'verticalAlign' : '',
 			'#class#' => '',
 			'#divGraphInfo#' => '',
+			'#panelLink#' => '',
 		);
+		$_version = jeedom::versionAlias($_version);
+		if ($this->getConfiguration('panelLink') != '') {
+			if ($_version == 'dashboard') {
+				$replace['#panelLink#'] = 'index.php?v=d&m=' . $this->getEqType_name() . '&p=' . $this->getConfiguration('panelLink');
+			} else {
+				$replace['#panelLink#'] = 'index.php?v=m&m=' . $this->getEqType_name() . '&p=' . $this->getConfiguration('panelLink');
+			}
+		}
 
 		//Automatic height when first displayed:
 		if ($this->getDisplay('height', 'auto') == 'auto') {

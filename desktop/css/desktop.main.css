@@ -550,7 +550,6 @@ Desktop
   a > img:hover {
     opacity: 0.75;
   }
-
   .btn:not(.cmdName),
   .btn:not(.cmdName):active,
   .btn:not(.cmdName).active {
@@ -776,6 +775,12 @@ Desktop
     padding-right: 10px;
   }
 
+  /* Legend panel */
+  body[data-page="panel"] #div_pageContainer legend {
+    background-color: rgba(var(--bg-color), var(--opacity)) !important;
+    margin: 5px 0 !important;
+  }
+
   /* legend on equipements pages */
   :not(.div_object) > legend:not(.no-bordered) {
     text-align: left !important;
@@ -808,6 +813,7 @@ div.div_viewZone legend.lg_viewZone {
   body[data-coloredcats="0"] div.eqLogic-widget .widget-name > a,
   body[data-coloredcats="0"] div.scenario.scenario-widget .widget-name  > a,
   body[data-coloredcats="0"] div.eqLogic-widget span.cmd.refresh > i,
+  body[data-coloredcats="0"] div.eqLogic-widget span.panelLink > i,
   body[data-coloredcats="0"] div.eqLogic-widget > span.cmd.editOptions:after,
   body[data-coloredcats="0"] .counterReorderJeedom {
     color: var(--link-color) !important;
@@ -1248,12 +1254,12 @@ div.div_viewZone legend.lg_viewZone {
   }
   .objectPreview .topPreview .objectSummaryParent[data-summary^="temp"] {
     top: 10px;
-    right: 58px;
+    right: 8px;
     font-size: 20px !important;
   }
   .objectPreview .topPreview .objectSummaryParent[data-summary="humidity"] {
     top: 10px;
-    right: 6px;
+    right: 60px;
     font-size: 20px !important;
   }
   .objectPreview .topPreview .objectSummaryParent[data-summary^="temp"] i,
@@ -1686,6 +1692,16 @@ div.div_viewZone legend.lg_viewZone {
   div.eqLogic-widget.editingMode .cmd.refresh {
     display: none;
   }
+
+  div.eqLogic-widget .panelLink i {
+    color: var(--eqTitle-color) !important;
+    font-size: 12px !important;
+  }
+
+  div.eqLogic-widget.editingMode .panelLink {
+    display: none;
+  }
+  
 
   div.eqLogic-widget .cmd.editOptions {
     position: absolute;
@@ -2560,6 +2576,9 @@ div.div_viewZone legend.lg_viewZone {
   [data-page=plugin] #div_configLog .panel-body,
   [data-page=plugin] #div_state .panel-body {
     min-height: 150px;
+  }
+  body[data-type="plugin"] #table_cmd td input.cmdAttr {
+    display: inline-block
   }
   #md_modal #div_confPlugin .panel-body {
     min-height: 140px;

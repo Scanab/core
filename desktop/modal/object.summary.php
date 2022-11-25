@@ -124,7 +124,7 @@ if (!isConnect()) {
 jeedomUtils.initTableSorter()
 
 $('#table_ObjectSummary .bt_removeObject').on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   var id = $(this).closest('tr.tr_object').attr('data-object_id')
   var name = $(this).closest('tr.tr_object').attr('data-object_name')
   bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer l\'objet}} <span style="font-weight: bold ;">' + name + '</span> ?', function(result) {
@@ -167,8 +167,8 @@ $("#table_ObjectSummary").sortable({
 
 $('#bt_saveSummaryObject').off('click').on('click',function() {
   jeedom.massEditSave({
-    type : 'jeeObject',
-    objects : $('#table_ObjectSummary .tr_object').getValues('.objectAttr'),
+    type: 'jeeObject',
+    objects: document.querySelector('#table_ObjectSummary .tr_object').getJeeValues('.objectAttr'),
     error: function(error) {
       $('#div_alertObjectSummary').showAlert({message: error.message, level: 'danger'})
     },

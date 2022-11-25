@@ -72,7 +72,7 @@ if (!jeeFrontEnd.md_scenarioSummary) {
       })
     },
     refreshScenarioSummary: function() {
-      $.clearDivContent('tbody_scenarioSummary')
+      document.emptyById('tbody_scenarioSummary')
       self = this
       jeedom.scenario.allOrderedByGroupObjectName({
         nocache: true,
@@ -83,7 +83,7 @@ if (!jeeFrontEnd.md_scenarioSummary) {
         success : function(data) {
           var table = []
           for(var i in data){
-            var tr = '<tr class="scenario" data-id="' + init(data[i].id) + '">'
+            var tr = '<tr>'
             tr += '<td>'
             tr += '<span class="label label-info scenarioAttr" data-l1key="id"></span>'
             tr += '</td>'
@@ -142,18 +142,21 @@ if (!jeeFrontEnd.md_scenarioSummary) {
             tr += '<a class="btn btn-danger tooltips btn-xs bt_summaryRemoveScenario" title="{{Supprimer ce scénario}}"><i class="far fa-trash-alt"></i></a> '
             tr += '</td>'
             tr += '</tr>'
-            var result = $(tr)
-            result.setValues(data[i], '.scenarioAttr')
-            table.push(result)
+            let newRow = document.createElement('tr')
+            newRow.innerHTML = tr
+            newRow.addClass('scenario')
+            newRow.setAttribute('data-id', init(data[i].id))
+            newRow.setJeeValues(data[i], '.scenarioAttr')
+            table.push(newRow)
           }
 
-          self.$tableScSummary.find('tbody').append(table)
+          document.getElementById('table_scenarioSummary').querySelector('tbody').append(...table)
           self.$tableScSummary.trigger("update")
 
           jeedom.timeline.autocompleteFolder()
 
           $('#table_scenarioSummary .bt_summaryRemoveScenario').on('click', function(event) {
-            $.hideAlert()
+            jeedomUtils.hideAlert()
             var id = $(this).closest('tr').attr('data-id')
             var name = $(this).closest('tr').find('span[data-l1key="humanName"]').text()
             bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer le scénario}} <span style="font-weight: bold ;">' + name + '</span> ?', function(result) {
@@ -229,7 +232,7 @@ $('#bt_refreshSummaryScenario').off().on('click', function() {
 })
 
 $('#bt_saveSummaryScenario').off().on('click', function() {
-  var scenarios = $('#table_scenarioSummary tbody .scenario').getValues('.scenarioAttr')
+  var scenarios = document.querySelector('#table_scenarioSummary tbody .scenario').getJeeValues('.scenarioAttr')
   jeedom.scenario.saveAll({
     scenarios : scenarios,
     error: function(error) {

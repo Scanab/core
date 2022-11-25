@@ -60,7 +60,7 @@ jeedom.config.load({
 })
 
 $('#bt_saveCalculHistory').on('click',function() {
-	var calculHistory = $('#table_calculHisotry tbody tr').getValues('.calculHistoryAttr')
+	var calculHistory = document.querySelectorAll('#table_calculHisotry tbody tr').getJeeValues('.calculHistoryAttr')
 	jeedom.config.save({
 		configuration: {'calculHistory' : calculHistory},
 		error: function(error) {
@@ -81,19 +81,19 @@ $('#table_calculHisotry tbody').on('click','.bt_removeCalculHistory',function() 
 })
 
 $('#table_calculHisotry tbody').on('click','.bt_findCmdCalculHistory',function() {
-	var tr = $(this).closest('tr')
+	var tr = this.closest('tr')
 	jeedom.cmd.getSelectModal({cmd: {type: 'info',subType : 'numeric',isHistorized : 1}}, function(result) {
-		tr.find('.calculHistoryAttr[data-l1key=calcul]').atCaret('insert', result.human)
+		tr.querySelector('.calculHistoryAttr[data-l1key="calcul"]').insertAtCursor(result.human)
 	})
 })
 
 $('#table_calculHisotry tbody').on('click','.bt_displayGraphCalculHistory',function() {
 	var options = {
-		graphType : $(this).closest('tr').find('.calculHistoryAttr[data-l1key=graphType]').value(),
-		groupingType : $(this).closest('tr').find('.calculHistoryAttr[data-l1key=groupingType]').value(),
-		graphStep :  ($(this).closest('tr').find('.calculHistoryAttr[data-l1key=graphStep]').value() == 0) ? false : true
+		graphType: this.closest('tr').querySelector('.calculHistoryAttr[data-l1key=graphType]').value,
+		groupingType: this.closest('tr').querySelector('.calculHistoryAttr[data-l1key=groupingType]').value,
+		graphStep: (this.closest('tr').querySelector('.calculHistoryAttr[data-l1key=graphStep]').value == 0) ? false : true
 	}
-	addChart($(this).closest('tr').find('.calculHistoryAttr[data-l1key=calcul]').value(), 1, options)
+	addChart(this.closest('tr').querySelector('.calculHistoryAttr[data-l1key=calcul]').value, 1, options)
 })
 
 function addCalculHistory(_calculHistory) {
@@ -154,7 +154,11 @@ function addCalculHistory(_calculHistory) {
 	html += '<a class="btn btn-default btn-sm pull-right bt_displayGraphCalculHistory" title="{{Afficher le graphique}}"><i class="fas fa-chart-area"></i></a>'
 	html += '</td>'
 	html += '</tr>'
-	$('#table_calculHisotry tbody').append(html)
-	$('#table_calculHisotry tbody tr').last().setValues(_calculHistory,'.calculHistoryAttr')
+
+	var table = document.getElementById('table_calculHisotry').querySelector('tbody')
+	let newRow = document.createElement("tr")
+    newRow.innerHTML = html
+    newRow.setJeeValues(_calculHistory,'.calculHistoryAttr')
+    table.appendChild(newRow)
 }
 </script>

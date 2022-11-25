@@ -43,35 +43,35 @@ jeeP.$rawLogCheck.on('click').on('click', function() {
 
   var scroll = $('#pre_globallog').scrollTop()
   jeedom.log.autoupdate({
-    log: $('li.li_log.active').attr('data-log'),
-    display: $('#pre_globallog'),
-    search: $('#in_searchGlobalLog'),
-    control: jeeP.$btGlobalLogStopStart,
+    log: document.querySelector('li.li_log.active').getAttribute('data-log'),
+    display: document.getElementById('pre_globallog'),
+    search: document.getElementById('in_searchGlobalLog'),
+    control: document.getElementById('bt_globalLogStopStart'),
     once: 1
   })
   $('#pre_globallog').scrollTop(scroll)
 })
 
-$(".li_log").on('click', function() {
-  $.clearDivContent('pre_globallog')
-  $(".li_log").removeClass('active')
-  $(this).addClass('active')
+$('.li_log').on('click', function() {
+  document.emptyById('pre_globallog')
+  document.querySelectorAll('.li_log').removeClass('active')
+  this.addClass('active')
   jeeP.$btGlobalLogStopStart.removeClass('btn-success')
     .addClass('btn-warning')
     .html('<i class="fas fa-pause"></i><span class="hidden-768"> {{Pause}}</span>')
     .attr('data-state', 1)
   jeedom.log.autoupdate({
-    log: $(this).attr('data-log'),
-    display: $('#pre_globallog'),
-    search: $('#in_searchGlobalLog'),
-    control: jeeP.$btGlobalLogStopStart,
+    log: this.getAttribute('data-log'),
+    display: document.getElementById('pre_globallog'),
+    search: document.getElementById('in_searchGlobalLog'),
+    control: document.getElementById('bt_globalLogStopStart')
   })
 })
 
 
 //searching
 $('#in_searchLogFilter').keyup(function() {
-  var search = $(this).value()
+  var search = this.value
   if (search == '') {
     $('#ul_object .li_log').show()
     return

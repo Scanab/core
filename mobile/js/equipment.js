@@ -92,7 +92,7 @@ function initEquipment(_object_id) {
   $('#in_searchDashboard').off('keyup').on('keyup',function() {
     window.scrollTo(0, 0)
     $('.div_displayEquipement').show()
-    var search = $(this).value()
+    var search = this.value
     if(search == '') {
       $('div.eqLogic-widget, div.scenario-widget').show()
       $('.objectHtml').packery()
@@ -202,7 +202,7 @@ function displayEqsByObject(objects_info, _objectId, _summary) {
       $('#div_displayEquipement .objectHtml').packery({gutter :0})
       setTimeout(function() {
         $('#div_displayEquipement .objectHtml').packery({gutter :0})
-      }, 1000)
+      }, 250)
     }
   })
 }

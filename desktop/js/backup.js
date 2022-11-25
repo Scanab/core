@@ -29,7 +29,7 @@ if (!jeeFrontEnd.backup) {
 
       $.showLoading()
       jeedom.config.load({
-        configuration: $('#backup').getValues('.configKey')[0],
+        configuration: document.getElementById('backup').getJeeValues('.configKey')[0],
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -37,7 +37,7 @@ if (!jeeFrontEnd.backup) {
           })
         },
         success: function(data) {
-          $('#backup').setValues(data, '.configKey')
+          document.getElementById('backup').setJeeValues(data, '.configKey')
           jeeFrontEnd.modifyWithoutSave = false
         }
       })
@@ -162,9 +162,9 @@ $(function() {
 })
 
 $("#bt_saveBackup").on('click', function(event) {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   jeedom.config.save({
-    configuration: $('#backup').getValues('.configKey')[0],
+    configuration: document.getElementById('backup').getJeeValues('.configKey')[0],
     error: function(error) {
       $.fn.showAlert({
         message: error.message,
@@ -173,7 +173,7 @@ $("#bt_saveBackup").on('click', function(event) {
     },
     success: function() {
       jeedom.config.load({
-        configuration: $('#backup').getValues('.configKey')[0],
+        configuration: document.getElementById('backup').getJeeValues('.configKey')[0],
         plugin: 'core',
         error: function(error) {
           $.fn.showAlert({
@@ -182,7 +182,7 @@ $("#bt_saveBackup").on('click', function(event) {
           })
         },
         success: function(data) {
-          $('#backup').setValues(data, '.configKey')
+          document.getElementById('backup').setJeeValues(data, '.configKey')
           jeeFrontEnd.modifyWithoutSave = false
           $.fn.showAlert({
             message: '{{Sauvegarde réussie}}',
@@ -198,7 +198,7 @@ $(".bt_backupJeedom").on('click', function(event) {
   var el = $(this)
   bootbox.confirm('{{Êtes-vous sûr de vouloir faire une sauvegarde de}} ' + JEEDOM_PRODUCT_NAME + ' {{? Une fois lancée cette opération ne peut être annulée}}', function(result) {
     if (result) {
-      $.hideAlert()
+      jeedomUtils.hideAlert()
       el.find('.fa-sync').show()
       jeedom.backup.backup({
         error: function(error) {
@@ -219,10 +219,10 @@ $("#bt_restoreJeedom").on('click', function(event) {
   var el = $(this)
   bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} ' + JEEDOM_PRODUCT_NAME + ' {{avec la sauvegarde}} <b>' + $('#sel_restoreBackup option:selected').text() + '</b> ? {{Une fois lancée cette opération ne peut être annulée.}} <span style="color:red;font-weight: bold;">{{IMPORTANT la restauration d\'un backup est une opération risquée et n\'est à utiliser qu\'en dernier recours}}.</span>', function(result) {
     if (result) {
-      $.hideAlert()
+      jeedomUtils.hideAlert()
       el.find('.fa-sync').show()
       jeedom.backup.restoreLocal({
-        backup: $('#sel_restoreBackup').value(),
+        backup: document.getElementById('sel_restoreBackup').value,
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -243,7 +243,7 @@ $("#bt_removeBackup").on('click', function(event) {
     if (result) {
       el.find('.fa-sync').show()
       jeedom.backup.remove({
-        backup: $('#sel_restoreBackup').value(),
+        backup: document.getElementById('sel_restoreBackup').value,
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -263,7 +263,7 @@ $("#bt_removeBackup").on('click', function(event) {
 })
 
 $('#bt_downloadBackup').on('click', function() {
-  window.open('core/php/downloadFile.php?pathfile=' + $('#sel_restoreBackup').value(), "_blank", null)
+  window.open('core/php/downloadFile.php?pathfile=' + document.getElementById('sel_restoreBackup').value, "_blank", null)
 })
 
 $('#bt_uploadBackup').fileupload({
@@ -291,7 +291,7 @@ $(".bt_uploadCloudBackup").on('click', function(event) {
     if (result) {
       el.find('.fa-sync').show()
       jeedom.backup.uploadCloud({
-        backup: $('#sel_restoreBackup').value(),
+        backup: document.getElementById('sel_restoreBackup').value,
         error: function(error) {
           $.fn.showAlert({
             message: error.message,
@@ -307,13 +307,13 @@ $(".bt_uploadCloudBackup").on('click', function(event) {
 })
 
 $(".bt_restoreRepoBackup").on('click', function(event) {
-  var el = $(this);
+  var el = this
   bootbox.confirm('{{Êtes-vous sûr de vouloir rapatrier la sauvegarde cloud}} <b>' + $('#sel_restoreCloudBackup option:selected').text() + '</b> ?', function(result) {
     if (result) {
-      el.find('.fa-sync').show()
+      el.querySelector('.fa-sync').seen()
       jeedom.backup.restoreCloud({
-        backup: el.closest('.repo').find('.sel_restoreCloudBackup').value(),
-        repo: el.attr('data-repo'),
+        backup: el.closest('.repo').querySelector('.sel_restoreCloudBackup').value,
+        repo: el.getAttribute('data-repo'),
         error: function(error) {
           $.fn.showAlert({
             message: error.message,

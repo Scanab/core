@@ -80,7 +80,7 @@ if ($selectPlugin != '') {
   "use strict"
 
   $(function() {
-    $.hideAlert()
+    jeedomUtils.hideAlert()
     jeedomUtils.initTableSorter()
     $('#table_message')[0].config.widgetOptions.resizable_widths = ['50px', '140px', '20%', '', '90px', '120px']
     $('#table_message').trigger('applyWidgets')
@@ -91,12 +91,12 @@ if ($selectPlugin != '') {
   $("#sel_plugin").on('change', function(event) {
     $('#md_modal').dialog({
       title: "{{Centre de Messages}}"
-    }).load('index.php?v=d&modal=message.display&selectPlugin=' + encodeURI($('#sel_plugin').value())).dialog('open')
+    }).load('index.php?v=d&modal=message.display&selectPlugin=' + encodeURI(document.getElementById('sel_plugin').jeeValue())).dialog('open')
   })
 
   $("#bt_clearMessage").on('click', function(event) {
     jeedom.message.clear({
-      plugin: $('#sel_plugin').value(),
+      plugin: document.getElementById('sel_plugin').jeeValue(),
       error: function(error) {
         $.fn.showAlert({
           message: error.message,
@@ -104,7 +104,7 @@ if ($selectPlugin != '') {
         })
       },
       success: function() {
-        $("#table_message tbody").remove()
+        document.querySelector("#table_message tbody").empty()
         jeedom.refreshMessageNumber()
       }
     })

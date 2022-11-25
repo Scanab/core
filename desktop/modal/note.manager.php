@@ -61,7 +61,7 @@ if (!jeeFrontEnd.md_noteManager) {
           $('#div_noteManagerAlert').showAlert({message: error.message, level: 'danger'})
         },
         success: function(notes) {
-          var note = $('#div_noteManagerDisplay').getValues('.noteAttr')[0]
+          var note = document.getElementById('div_noteManagerDisplay').getJeeValues('.noteAttr')[0]
           var ul = ''
           for (var i in notes) {
             ul += '<li class="cursor li_noteDisplay" data-id="' + notes[i].id + '"><a>' + notes[i].name + '</a></li>'
@@ -77,7 +77,7 @@ if (!jeeFrontEnd.md_noteManager) {
 }
 
 (function() {
-  $.hideAlert()
+  jeedomUtils.hideAlert()
   var jeeM = jeeFrontEnd.md_noteManager
   jeeM.init()
 
@@ -91,8 +91,8 @@ if (!jeeFrontEnd.md_noteManager) {
   })
 
   $('#bt_noteManagerAdd').on('click',function() {
-    $('#div_noteManagerDisplay .noteAttr').value('')
-    $('#ul_noteList li.active').removeClass('active')
+    document.querySelectorAll('#div_noteManagerDisplay .noteAttr').jeeValue('')
+    document.querySelector('#ul_noteList li.active').removeClass('active')
   })
 
   $('#ul_noteList').on('click','.li_noteDisplay',function() {
@@ -104,15 +104,15 @@ if (!jeeFrontEnd.md_noteManager) {
         $('#div_noteManagerAlert').showAlert({message: error.message, level: 'danger'})
       },
       success: function(note) {
-        $('#div_noteManagerDisplay .noteAttr').value('')
-        $('#div_noteManagerDisplay').setValues(note, '.noteAttr')
+        document.querySelectorAll('#div_noteManagerDisplay .noteAttr').jeeValue('')
+        document.getElementById('div_noteManagerDisplay').setJeeValues(note, '.noteAttr')
         jeedomUtils.taAutosize()
       }
     })
   })
 
   $('#bt_noteManagerSave').on('click',function() {
-    var note = $('#div_noteManagerDisplay').getValues('.noteAttr')[0]
+    var note = document.getElementById('div_noteManagerDisplay').getJeeValues('.noteAttr')[0]
     jeedom.note.save({
       note : note,
       error: function(error) {
@@ -120,14 +120,14 @@ if (!jeeFrontEnd.md_noteManager) {
       },
       success: function(note) {
         $('#div_noteManagerAlert').showAlert({message: '{{Note sauvegardée avec succès}}', level: 'success'})
-        $('#div_noteManagerDisplay').setValues(note, '.noteAttr')
+        document.getElementById('div_noteManagerDisplay').setJeeValues(note, '.noteAttr')
         jeeM.updateNoteList()
       }
     })
   })
 
   $('#bt_noteManagerRemove').on('click',function() {
-    var note = $('#div_noteManagerDisplay').getValues('.noteAttr')[0]
+    var note = document.getElementById('div_noteManagerDisplay').getJeeValues('.noteAttr')[0]
     var r = confirm('{{Voulez-vous vraiment supprimer la note :}}' + ' ' + note.name + ' ?')
     if (r == true) {
       jeedom.note.remove({
@@ -137,7 +137,7 @@ if (!jeeFrontEnd.md_noteManager) {
         },
         success: function(notes) {
           $('#div_noteManagerAlert').showAlert({message: '{{Note supprimée avec succès}}', level: 'success'})
-          $('#div_noteManagerDisplay .noteAttr').value('')
+          document.querySelectorAll('#div_noteManagerDisplay .noteAttr').jeeValue('')
           jeeM.updateNoteList()
         }
       })

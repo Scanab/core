@@ -3,6 +3,7 @@
 var jeedomUtils = {}
 jeedomUtils.backgroundIMG = null
 jeedomUtils._elBackground = null
+jeedomUtils.scrolling = false
 
 $(function() {
   $(document)
@@ -17,6 +18,24 @@ $(function() {
 window.addEventListener('error', function(event) {
   $.hideLoading()
 })
+
+
+var delayedExec = function(after, fn) {
+  var timer;
+  return function() {
+      timer && clearTimeout(timer);
+      timer = setTimeout(fn, after);
+  };
+};
+
+var scrollStopper = delayedExec(250, function() {
+  jeedomUtils.scrolling = false
+});
+
+window.addEventListener('scroll', function(e) {
+  jeedomUtils.scrolling = true
+  scrollStopper();
+});
 
 //allow shortcut as app:
 if ('serviceWorker' in navigator) {
@@ -611,6 +630,11 @@ jeedomUtils.loadPage = function(_page, _title, _option, _plugin, _dialog) {
     jeedom.cmd.resetUpdateFunction();
     $('#page').hide().load(page, function() {
       $('body').attr('data-page', _page)
+      if (init(_plugin) != '') {
+        $('body').attr('data-plugin', _plugin)
+      }else{
+        $('body').attr('data-plugin', null)
+      }
       $('#page').trigger('create')
       jeedomUtils.setBackgroundImage('')
       window.history.pushState('', '', 'index.php?v=m&p=home')
